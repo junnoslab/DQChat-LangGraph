@@ -2,9 +2,7 @@ from enum import StrEnum
 
 from langchain_core.runnables.base import RunnableLike
 
-
-def run():
-    print("skldfj")
+from ..validator.validator import test, validate
 
 
 class Nodes(StrEnum):
@@ -24,7 +22,7 @@ class Nodes(StrEnum):
     """Answer validation language model inference node"""
 
     @property
-    def id(self) -> str:
+    def key(self) -> str:
         """
         Get the ID of the node.\n
         :return: ID of the node
@@ -38,13 +36,13 @@ class Nodes(StrEnum):
         :return: Runnable for the node
         """
         if self is Nodes.QUESTIONS_LOADER:
-            return run
+            return test
         elif self is Nodes.QUESTION_ANSWERER:
-            return run
+            return test
         elif self is Nodes.ANSWER_PARSER:
-            return run
+            return test
         elif self is Nodes.ANSWER_VALIDATOR:
-            return run
+            return validate
         else:
             raise ValueError(f"Runnable for node {self} is not defined.")
 
@@ -54,4 +52,4 @@ class Nodes(StrEnum):
         Get the id and runnable for the node.\n
         :return: Tuple of id and runnable for the node
         """
-        return self.id, self.runnable
+        return self.key, self.runnable

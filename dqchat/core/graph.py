@@ -3,6 +3,7 @@ from langgraph.graph.state import CompiledStateGraph
 
 from .nodes import Nodes
 from .state import State
+from ..validator import validate
 
 
 class GraphBuilder:
@@ -10,13 +11,31 @@ class GraphBuilder:
         self.graph = StateGraph(State)
 
     def build(self) -> CompiledStateGraph:
+        # Add nodes to the graph
         for node in Nodes:
             self.graph.add_node(*node.node_action_binding)
-        self.graph.add_edge(start_key=START, end_key=Nodes.QUESTIONS_LOADER.id)
-        self.graph.add_edge(start_key=Nodes.QUESTIONS_LOADER.id, end_key=Nodes.QUESTION_ANSWERER.id)
-        self.graph.add_edge(start_key=Nodes.QUESTION_ANSWERER.id, end_key=Nodes.ANSWER_PARSER.id)
-        self.graph.add_edge(start_key=Nodes.ANSWER_PARSER.id, end_key=Nodes.ANSWER_VALIDATOR.id)
-        self.graph.add_edge(start_key=Nodes.ANSWER_VALIDATOR.id, end_key=END)
 
+        # Add edges to the graph
+        # Start -> Question Dataset loader
+        self.graph.add_edge(start_key=START, end_key=Nodes.QUESTIONS_LOADER.key)
+        # Question Dataset loader -> QA LLM
+        self.graph.add_edge(start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key)
+        # QA LLM -> Answer Dataset Parser
+        self.graph.add_edge(start_key=Nodes.QUESTION_ANSWERER.key, end_key=Nodes.ANSWER_PARSER.key)
+        # Answer Dataset Parser -> Answer Validator LLM
+        self.graph.add_edge(start_key=Nodes.ANSWER_PARSER.key, end_key=Nodes.ANSWER_VALIDATOR.key)
+        # Answer Validator LLM -> if invalid: QA LLM, if valid: END
+        # https://langchain-ai.github.io/langgraph/concepts/low_level/#conditional-edges
+        self.graph.add_conditional_edges(
+            source=Nodes.ANSWER_VALIDATOR.key,
+            path=validate,
+            path_map={
+                "invalid": Nodes.QUESTION_ANSWERER.key,
+                "valid": END
+            }
+        )
+        # self.graph.add_edge(start_key="invalid", end_key=Nodes.QUESTION_ANSWERER.key)
+
+        # Compile the graph
         compiled_graph = self.graph.compile()
         return compiled_graph
