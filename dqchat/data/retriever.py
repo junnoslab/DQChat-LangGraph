@@ -72,7 +72,7 @@ class Retriever(BaseRetriever):
         return docs
 
 
-def retrieve(state: State, config: dict) -> State:
+def prepare_retriever(state: State, config: dict) -> State:
     """
     Retrieve the data from the vector store.\n
     :param state: GraphState
@@ -86,9 +86,6 @@ def retrieve(state: State, config: dict) -> State:
     )
     retriever = Retriever(vector_store=store)
 
-    rag_chain = (
-        {"context": retriever, "question": state["questions"]}
-        |
-    )
+    state["retriever"] = retriever
 
     return state

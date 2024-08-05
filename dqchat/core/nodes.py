@@ -2,7 +2,7 @@ from enum import StrEnum
 
 from langchain_core.runnables.base import RunnableLike
 
-from ..data import load_questions, retrieve
+from ..data import load_questions, prepare_retriever
 from ..validator.validator import test, validate
 
 
@@ -12,9 +12,12 @@ class Nodes(StrEnum):
     Their identifiers are defined with prefix for each node type.\n
     - `ds` for dataset nodes
     - `lm` for language model nodes
+    - `vt` for vector database nodes
     """
     QUESTIONS_LOADER = "ds_loader_questions"
     """Questions dataset loader node"""
+    RETRIEVER_PREPARER = "vt_preparer_retriever"
+    """VectorDB retriever preparation node"""
     QUESTION_ANSWERER = "lm_answerer_question"
     """Question answering language model inference node"""
     ANSWER_PARSER = "ds_parser_answer"
@@ -38,8 +41,10 @@ class Nodes(StrEnum):
         """
         if self is Nodes.QUESTIONS_LOADER:
             return load_questions
+        elif self is Nodes.RETRIEVER_PREPARER:
+            return prepare_retriever
         elif self is Nodes.QUESTION_ANSWERER:
-            return retrieve
+            return test
         elif self is Nodes.ANSWER_PARSER:
             return test
         elif self is Nodes.ANSWER_VALIDATOR:

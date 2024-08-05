@@ -1,6 +1,7 @@
 from typing import Annotated, Optional, TypedDict, Iterator
 
 from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
 
 from ..data.const import HF_DATASET_NAME, HF_CONFIG_QUESTIONS, CHROMA_DB_PATH, CHROMA_COLLECTION_NAME
 from ..model.const import HF_LLM_MODEL_NAME, HF_EMBEDDING_MODEL_NAME
@@ -9,6 +10,7 @@ from ..secret import HF_ACCESS_TOKEN
 
 class State(TypedDict):
     questions: Optional[Iterator[Document]]
+    retriever: Optional[BaseRetriever]
 
 
 class Config(TypedDict):

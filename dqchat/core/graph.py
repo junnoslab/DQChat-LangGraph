@@ -18,8 +18,10 @@ class GraphBuilder:
         # Add edges to the graph
         # Start -> Question Dataset loader
         self.graph.add_edge(start_key=START, end_key=Nodes.QUESTIONS_LOADER.key)
+        # Question Dataset loader -> VectorDB context retriever
+        self.graph.add_edge(start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.RETRIEVER_PREPARER.key)
         # VectorDB context retriever -> QA LLM
-        self.graph.add_edge(start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key)
+        self.graph.add_edge(start_key=Nodes.RETRIEVER_PREPARER.key, end_key=Nodes.QUESTION_ANSWERER.key)
         # QA LLM -> Answer Dataset Parser
         self.graph.add_edge(start_key=Nodes.QUESTION_ANSWERER.key, end_key=Nodes.ANSWER_PARSER.key)
         # Answer Dataset Parser -> Answer Validator LLM

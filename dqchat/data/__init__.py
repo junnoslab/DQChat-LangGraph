@@ -1,2 +1,2 @@
 from .loader import load_questions
-from .retriever import retrieve
+from .retriever import prepare_retriever

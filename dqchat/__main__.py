@@ -15,7 +15,8 @@ def main():
 
     graph.invoke(
         {
-            "questions": None
+            "questions": None,
+            "retriever": None,
         },
         config=Config.default_config()
     )
