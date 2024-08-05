@@ -3,6 +3,7 @@ from enum import StrEnum
 from langchain_core.runnables.base import RunnableLike
 
 from ..data import load_questions, prepare_retriever
+from ..model import generate_raft_dataset
 from ..validator.validator import test, validate
 
 
@@ -14,6 +15,7 @@ class Nodes(StrEnum):
     - `lm` for language model nodes
     - `vt` for vector database nodes
     """
+
     QUESTIONS_LOADER = "ds_loader_questions"
     """Questions dataset loader node"""
     RETRIEVER_PREPARER = "vt_preparer_retriever"
@@ -44,7 +46,7 @@ class Nodes(StrEnum):
         elif self is Nodes.RETRIEVER_PREPARER:
             return prepare_retriever
         elif self is Nodes.QUESTION_ANSWERER:
-            return test
+            return generate_raft_dataset
         elif self is Nodes.ANSWER_PARSER:
             return test
         elif self is Nodes.ANSWER_VALIDATOR:

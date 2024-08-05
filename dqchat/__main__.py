@@ -18,7 +18,7 @@ def main():
             "questions": None,
             "retriever": None,
         },
-        config=Config.default_config()
+        config=Config.default_config(),
     )
 
 

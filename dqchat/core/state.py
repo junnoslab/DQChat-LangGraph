@@ -1,10 +1,17 @@
-from typing import Annotated, Optional, TypedDict, Iterator
+from typing import Optional, TypedDict, Iterator
 
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 
-from ..data.const import HF_DATASET_NAME, HF_CONFIG_QUESTIONS, CHROMA_DB_PATH, CHROMA_COLLECTION_NAME
-from ..model.const import HF_LLM_MODEL_NAME, HF_EMBEDDING_MODEL_NAME
+from ..const import (
+    HF_DATASET_NAME,
+    HF_CONFIG_QUESTIONS,
+    HF_QUESTIONS_DATASET_CONTENT_COL,
+    CHROMA_DB_PATH,
+    CHROMA_COLLECTION_NAME,
+    HF_LLM_MODEL_NAME,
+    HF_EMBEDDING_MODEL_NAME,
+)
 from ..secret import HF_ACCESS_TOKEN
 
 
@@ -18,6 +25,7 @@ class Config(TypedDict):
     embedding_model_name: str
     dataset_name: str
     dataset_config: str
+    dataset_questions_content_column: str
     hf_access_token: str
 
     vector_db_path: str
@@ -30,6 +38,7 @@ class Config(TypedDict):
             embedding_model_name=HF_EMBEDDING_MODEL_NAME,
             dataset_name=HF_DATASET_NAME,
             dataset_config=HF_CONFIG_QUESTIONS,
+            dataset_questions_content_column=HF_QUESTIONS_DATASET_CONTENT_COL,
             hf_access_token=HF_ACCESS_TOKEN,
             vector_db_path=CHROMA_DB_PATH,
             vector_db_collection_name=CHROMA_COLLECTION_NAME,
