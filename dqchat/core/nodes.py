@@ -2,6 +2,7 @@ from enum import StrEnum
 
 from langchain_core.runnables.base import RunnableLike
 
+from ..data import load_questions, retrieve
 from ..validator.validator import test, validate
 
 
@@ -24,8 +25,8 @@ class Nodes(StrEnum):
     @property
     def key(self) -> str:
         """
-        Get the ID of the node.\n
-        :return: ID of the node
+        Get the key of the node.\n
+        :return: key of the node
         """
         return self.value
 
@@ -36,9 +37,9 @@ class Nodes(StrEnum):
         :return: Runnable for the node
         """
         if self is Nodes.QUESTIONS_LOADER:
-            return test
+            return load_questions
         elif self is Nodes.QUESTION_ANSWERER:
-            return test
+            return retrieve
         elif self is Nodes.ANSWER_PARSER:
             return test
         elif self is Nodes.ANSWER_VALIDATOR:

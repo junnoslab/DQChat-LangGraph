@@ -2,6 +2,15 @@
 .pixi
 *.egg-info
 
+# Secrets
+secrets*
+
+# Playgrounds
+/playground
+
+# VectorDB
+/db
+
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,python,macos,linux,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,python,macos,linux,visualstudiocode
 
@@ -332,4 +341,4 @@ pyrightconfig.json
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/intellij+all,python,macos,linux,visualstudiocode
+# End of https://www.toptal.com/developers/gitignore/api/intellij+all,python,macos,linux,visualstudiocode!/dqchat/secrets.py

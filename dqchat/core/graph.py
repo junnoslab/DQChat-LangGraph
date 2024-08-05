@@ -2,13 +2,13 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
 from .nodes import Nodes
-from .state import State
+from .state import State, Config
 from ..validator import validate
 
 
 class GraphBuilder:
     def __init__(self):
-        self.graph = StateGraph(State)
+        self.graph = StateGraph(State, config_schema=Config)
 
     def build(self) -> CompiledStateGraph:
         # Add nodes to the graph
@@ -18,7 +18,7 @@ class GraphBuilder:
         # Add edges to the graph
         # Start -> Question Dataset loader
         self.graph.add_edge(start_key=START, end_key=Nodes.QUESTIONS_LOADER.key)
-        # Question Dataset loader -> QA LLM
+        # VectorDB context retriever -> QA LLM
         self.graph.add_edge(start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key)
         # QA LLM -> Answer Dataset Parser
         self.graph.add_edge(start_key=Nodes.QUESTION_ANSWERER.key, end_key=Nodes.ANSWER_PARSER.key)
@@ -34,7 +34,6 @@ class GraphBuilder:
                 "valid": END
             }
         )
-        # self.graph.add_edge(start_key="invalid", end_key=Nodes.QUESTION_ANSWERER.key)
 
         # Compile the graph
         compiled_graph = self.graph.compile()

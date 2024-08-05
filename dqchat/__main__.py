@@ -2,6 +2,7 @@ from PIL import Image
 import io
 
 from .core.graph import GraphBuilder
+from .core.state import Config
 
 
 def main():
@@ -14,8 +15,9 @@ def main():
 
     graph.invoke(
         {
-            "messages": ["Hello?"]
-        }
+            "questions": None
+        },
+        config=Config.default_config()
     )
 
 

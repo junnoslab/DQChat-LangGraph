@@ -1,1 +1,2 @@
-from .loader import DataLoader
+from .loader import load_questions
+from .retriever import retrieve

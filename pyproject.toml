@@ -4,11 +4,14 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
 requires-python = ">= 3.11"
-dependencies = [ "langgraph>=0.1.19,<0.2", "langchain-core>=0.2.27,<0.3", "huggingface>=0.0.1,<0.0.2", "langchain-huggingface>=0.0.3,<0.0.4", "langchain-community>=0.2.11,<0.3"]
+dependencies = [ "langgraph>=0.1.19,<0.2", "langchain-core>=0.2.27,<0.3", "huggingface>=0.0.1,<0.0.2", "langchain-huggingface>=0.0.3,<0.0.4", "langchain-community>=0.2.11,<0.3", "pydantic", "datasets", "chromadb"]
 
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["dqchat"]
 
 [tool.pixi.project]
 channels = ["conda-forge"]
