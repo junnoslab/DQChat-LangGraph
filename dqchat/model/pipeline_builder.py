@@ -60,9 +60,8 @@ def __prepare_prompt_template() -> ChatPromptTemplate:
 
 
 def generate_raft_dataset(state: State, config: dict) -> State:
-    # Prepare HuggingFace Pipeline
-    model_id = config["configurable"]["model_name"]
-    pipeline = __build_pipeline(model_id)
+    # Prepare pipeline
+    pipeline = __build_pipeline(config["configurable"]["model_name"])
 
     # Prepare prompt template
     prompt_template = __prepare_prompt_template()
