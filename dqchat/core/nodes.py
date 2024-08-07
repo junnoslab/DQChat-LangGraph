@@ -2,7 +2,7 @@ from enum import StrEnum
 
 from langchain_core.runnables.base import RunnableLike
 
-from ..data import load_questions, prepare_retriever
+from ..data import load_questions, prepare_retriever, save
 from ..model import generate_raft_dataset
 from ..validator.validator import test, validate
 
@@ -22,8 +22,6 @@ class Nodes(StrEnum):
     """VectorDB retriever preparation node"""
     QUESTION_ANSWERER = "lm_answerer_question"
     """Question answering language model inference node"""
-    ANSWER_PARSER = "ds_parser_answer"
-    """Pydantic model to dataset parser node"""
     ANSWER_VALIDATOR = "lm_validator_answer"
     """Answer validation language model inference node"""
 
@@ -47,10 +45,8 @@ class Nodes(StrEnum):
             return prepare_retriever
         elif self is Nodes.QUESTION_ANSWERER:
             return generate_raft_dataset
-        elif self is Nodes.ANSWER_PARSER:
-            return test
         elif self is Nodes.ANSWER_VALIDATOR:
-            return validate
+            return save
         else:
             raise ValueError(f"Runnable for node {self} is not defined.")
 

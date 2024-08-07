@@ -8,7 +8,7 @@ HF_LLM_MODEL_NAME: str = "MLP-KTLim/llama-3-Korean-Bllossom-8B"
 HF_EMBEDDING_MODEL_NAME: str = "jhgan/ko-sroberta-multitask"
 
 # VectorDB
-CHROMA_DB_PATH: str = "../db"
+CHROMA_DB_PATH: str = "db"
 CHROMA_COLLECTION_NAME: str = "dqchat"
 
 # Prompt Template
@@ -18,3 +18,12 @@ RAG_PROMPT_TEMPLATE: str = """당신은 다이퀘스트의 유능한 AI 어시�
 Context: {context}
 
 """
+
+# Output Parser
+POOR_DISTANCE_THRESHOLD: float = 60.0
+
+PROMPT_SYSTEM: str = "System"
+PROMPT_CONTEXT: str = "Context"
+PROMPT_HUMAN: str = "Human"
+PROMPT_ASSISTANT: str = "Assistant"
+PROMPT_SECTIONS: list[str] = [PROMPT_SYSTEM, PROMPT_CONTEXT, PROMPT_HUMAN, PROMPT_ASSISTANT]

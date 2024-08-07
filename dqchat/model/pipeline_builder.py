@@ -5,39 +5,18 @@ from langchain_core.prompts import (
     HumanMessagePromptTemplate,
 )
 from langchain_core.documents import Document
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
-from langchain_huggingface import HuggingFacePipeline
+from langchain_core.prompt_values import ChatPromptValue
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langsmith import traceable
 from transformers import AutoTokenizer
+from transformers.pipelines import Pipeline, pipeline
 import orjson
 import torch
+import tqdm
 
 from ..const import RAG_PROMPT_TEMPLATE
 from ..core.state import State
-
-
-def __build_pipeline(model_id: str) -> HuggingFacePipeline:
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    terminators = [
-        tokenizer.eos_token_id,
-        tokenizer.convert_tokens_to_ids("<|eot_id|>"),
-    ]
-
-    pipeline = HuggingFacePipeline.from_model_id(
-        model_id=model_id,
-        task="text-generation",
-        device=-1,
-        model_kwargs=dict(torch_dtype=torch.bfloat16),
-        pipeline_kwargs=dict(
-            max_new_tokens=1024,
-            do_sample=True,
-            temperature=0.6,
-            top_p=0.9,
-            eos_token_id=terminators,
-        ),
-    )
-
-    return pipeline
+from ..data.parser import RAFTResponseParser
 
 
 def __prepare_prompt_template() -> ChatPromptTemplate:
@@ -59,30 +38,79 @@ def __prepare_prompt_template() -> ChatPromptTemplate:
     )
 
 
+def __generate_pipeline(model_name: str) -> Pipeline:
+    pipe = pipeline(
+        task="text-generation",
+        model=model_name,
+        device_map="auto",
+        model_kwargs={
+            "torch_dtype": torch.bfloat16,
+        },
+    )
+
+    return pipe
+
+
+def __run_pipeline(inputs: dict) -> str:
+    pipeline: Pipeline = inputs["pipeline"]
+    prompt: ChatPromptValue = inputs["prompt"]
+    config = inputs["config"]
+
+    llm_model_name: str = config["model_name"]
+    tokenizer = AutoTokenizer.from_pretrained(llm_model_name)
+    terminators = [
+        tokenizer.eos_token_id,
+        tokenizer.convert_tokens_to_ids("<|eot_id|>"),
+    ]
+
+    output = pipeline(
+        prompt.to_string(),
+        max_new_tokens=1024,
+        do_sample=True,
+        temperature=0.6,
+        top_p=0.9,
+        eos_token_id=terminators,
+    )
+
+    return output[0]["generated_text"]
+
+
 def generate_raft_dataset(state: State, config: dict) -> State:
+    # Unwrap state and config
+    config = config["configurable"]
+    llm_model_name: str = config["model_name"]
+
     # Prepare pipeline
-    pipeline = __build_pipeline(config["configurable"]["model_name"])
+    pipeline: Pipeline = __generate_pipeline(model_name=llm_model_name)
 
     # Prepare prompt template
-    prompt_template = __prepare_prompt_template()
+    prompt_template: ChatPromptTemplate = __prepare_prompt_template()
 
     # Prepare retriever
     retriever = state["retriever"]
-    if retriever is None:
-        raise ValueError("Retriever is not set.")
 
     # Chain pipeline + retriever + prompt
     rag_chain = (
         {"context": retriever | __format_docs, "question": RunnablePassthrough()}
         | prompt_template
-        | pipeline
-        | StrOutputParser()
+        | {
+            "prompt": RunnablePassthrough(),
+            "pipeline": lambda _: pipeline,
+            "config": lambda _: config,
+        }
+        | RunnableLambda(__run_pipeline)
+        | RAFTResponseParser()
     )
 
     # Prepare questions dataset
-    for question in state["questions"]:
-        output = rag_chain.invoke(input=question.page_content)
-        print(output)
+    pbar = tqdm.tqdm(state["questions"], total=3480)
+    for idx, question_dict in enumerate(pbar):
+        pbar.set_description(f"{question_dict["category"]}")
+        pbar.set_postfix(q=question_dict["question"])
+        question = question_dict["question"]
+        output = rag_chain.invoke(input=question)
+
+        state["responses"].append(output)
 
     return state
 

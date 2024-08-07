@@ -1,6 +1,6 @@
-from typing import Optional, TypedDict, Iterator
+from typing import Optional, TypedDict
 
-from langchain_core.documents import Document
+from datasets import IterableDataset
 from langchain_core.retrievers import BaseRetriever
 
 from ..const import (
@@ -12,12 +12,14 @@ from ..const import (
     HF_LLM_MODEL_NAME,
     HF_EMBEDDING_MODEL_NAME,
 )
+from ..data.parser import RAFTResponse
 from ..secret import HF_ACCESS_TOKEN
 
 
 class State(TypedDict):
-    questions: Optional[Iterator[Document]]
+    questions: Optional[IterableDataset]
     retriever: Optional[BaseRetriever]
+    responses: list[RAFTResponse]
 
 
 class Config(TypedDict):

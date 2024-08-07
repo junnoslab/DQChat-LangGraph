@@ -26,20 +26,16 @@ class GraphBuilder:
         self.graph.add_edge(
             start_key=Nodes.RETRIEVER_PREPARER.key, end_key=Nodes.QUESTION_ANSWERER.key
         )
-        # QA LLM -> Answer Dataset Parser
+        # QA LLM -> Answer Validator LLM
         self.graph.add_edge(
-            start_key=Nodes.QUESTION_ANSWERER.key, end_key=Nodes.ANSWER_PARSER.key
-        )
-        # Answer Dataset Parser -> Answer Validator LLM
-        self.graph.add_edge(
-            start_key=Nodes.ANSWER_PARSER.key, end_key=Nodes.ANSWER_VALIDATOR.key
+            start_key=Nodes.QUESTION_ANSWERER.key, end_key=Nodes.ANSWER_VALIDATOR.key
         )
         # Answer Validator LLM -> if invalid: QA LLM, if valid: END
         # https://langchain-ai.github.io/langgraph/concepts/low_level/#conditional-edges
         self.graph.add_conditional_edges(
             source=Nodes.ANSWER_VALIDATOR.key,
             path=validate,
-            path_map={"invalid": Nodes.QUESTION_ANSWERER.key, "valid": END},
+            path_map={"invalid": END, "valid": END},
         )
 
         # Compile the graph

@@ -25,6 +25,7 @@ class Store:
         self.collection = collection
 
     def query(self, query: str, top_k: int = 4) -> QueryResult:
+        # Update query to get batch
         query_embedding = self.embedding_model.encode(query).tolist()
         results = self.collection.query(
             query_embeddings=query_embedding, n_results=top_k
