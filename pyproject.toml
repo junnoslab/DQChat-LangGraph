@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
 requires-python = ">= 3.11, < 3.12"
-dependencies = []
+dependencies = [ "torch>=2.4.0,<3", "langchain>=0.2.13,<0.3", "langchain-core>=0.2.30,<0.3", "langgraph>=0.2.3,<0.3", "chromadb>=0.5.5,<0.6", "transformers>=4.44.0,<5", "datasets>=2.20.0,<3", "accelerate>=0.33.0,<0.34", "peft>=0.12.0,<0.13", "trl>=0.9.6,<0.10", "pydantic>=2.8.2,<3", "tqdm>=4.66.5,<5", "bitsandbytes>=0.42.0,<0.44"]
 
 [build-system]
 requires = ["setuptools"]
@@ -27,25 +27,13 @@ macos = "14.6.1"
 [tool.pixi.tasks]
 
 [tool.pixi.dependencies]
+setuptools = ">=72.1.0,<73"
 pre-commit = ">=3.7.1,<4"
-pytorch = ">=2.4.0,<3"
-langchain = ">=0.2.13,<0.3"
-langchain-core = ">=0.2.30,<0.3"
-langgraph = ">=0.2.3,<0.3"
-chromadb = ">=0.5.5,<0.6"
-transformers = ">=4.44.0,<4.45"
-datasets = ">=2.14.4,<2.15"
-accelerate = ">=0.33.0,<0.34"
-peft = ">=0.12.0,<0.13"
-trl = ">=0.9.6,<0.10"
-pydantic = ">=2.8.2,<2.9"
-tqdm = ">=4.66.5,<4.67"
 
 [tool.pixi.target.osx-arm64.dependencies]
 mlx = ">=0.16.3,<0.17"
 
 [tool.pixi.target.linux-64.dependencies]
-bitsandbytes = ">=0.43.2,<0.44"
 pytorch-cuda = "12.1.*"
 
 [tool.bumpversion]
