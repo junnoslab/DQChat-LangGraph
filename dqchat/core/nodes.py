@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import Enum
 
 from langchain_core.runnables.base import RunnableLike
 
@@ -7,7 +7,7 @@ from ..model import generate_raft_dataset
 from ..validator.validator import test
 
 
-class Nodes(StrEnum):
+class Nodes(Enum):
     """
     Nodes in the state graph.\n
     Their identifiers are defined with prefix for each node type.\n
@@ -24,8 +24,8 @@ class Nodes(StrEnum):
     """Question answering language model inference node"""
     QA_DATASET_CHECKPOINTER = "ds_checkpoint_qa"
     """Question answering dataset checkpointing node"""
-    ANSWER_VALIDATOR = "lm_validator_answer"
-    """Answer validation language model inference node"""
+    # ANSWER_VALIDATOR = "lm_validator_answer"
+    # """Answer validation language model inference node"""
 
     @property
     def key(self) -> str:

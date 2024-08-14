@@ -104,7 +104,7 @@ def generate_raft_dataset(state: State, config: dict) -> State:
     # Prepare questions dataset
     pbar = tqdm.tqdm(state["questions"], total=3480)
     for idx, question_dict in enumerate(pbar):
-        pbar.set_description(f"{question_dict["category"]}")
+        pbar.set_description(f"{question_dict['category']}")
         pbar.set_postfix(q=question_dict["question"])
         question = question_dict["question"]
         output = rag_chain.invoke(input=question)

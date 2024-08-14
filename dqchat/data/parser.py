@@ -6,7 +6,14 @@ import re
 from langchain.schema import BaseOutputParser
 from pydantic import BaseModel
 
-from ..const import POOR_DISTANCE_THRESHOLD, PROMPT_HUMAN, PROMPT_SYSTEM, PROMPT_CONTEXT, PROMPT_ASSISTANT, PROMPT_SECTIONS
+from ..const import (
+    POOR_DISTANCE_THRESHOLD,
+    PROMPT_HUMAN,
+    PROMPT_SYSTEM,
+    PROMPT_CONTEXT,
+    PROMPT_ASSISTANT,
+    PROMPT_SECTIONS,
+)
 
 
 class RAFTResponse(BaseModel):
@@ -58,10 +65,12 @@ class RAFTResponseParser(BaseOutputParser):
             if context.get("metadata", {}).get("distance", 0) < POOR_DISTANCE_THRESHOLD
         ]
         negative_doc_ids = [id for id in doc_ids if id not in positive_doc_ids]
+
         def metadata(context: dict[str, Any], target: str) -> str:
-            return context.get('metadata', {}).get(target, "")
+            return context.get("metadata", {}).get(target, "")
+
         reasons = [
-            f"'{metadata(context, "answer")}'은/는 ({metadata(context, "category")} - {metadata(context, "clause")} - {doc_id}) 문서에서 확인할 수 있습니다."
+            f"'{metadata(context, 'answer')}'은/는 ({metadata(context, 'category')} - {metadata(context, 'clause')} - {doc_id}) 문서에서 확인할 수 있습니다."
             for context, doc_id in zip(contexts, doc_ids)
             if doc_id in positive_doc_ids
         ]
@@ -83,21 +92,27 @@ class RAFTResponseParser(BaseOutputParser):
             section = re.sub(pattern, "", match.string, flags=re.MULTILINE)
             return {prefix: section}
         return {}
-    
-    def parse(self, text: str):        
+
+    def parse(self, text: str):
         sections = RAFTResponseParser.__split_sections(text)
 
         result: dict[str, Any] = {}
 
         section_content_pattern = rf"^({'|'.join(PROMPT_SECTIONS)}):\s"
         for section in sections:
-            result.update(RAFTResponseParser.__parse_section_content(section=section, pattern=section_content_pattern))
+            result.update(
+                RAFTResponseParser.__parse_section_content(
+                    section=section, pattern=section_content_pattern
+                )
+            )
 
         # Remove eos_token from Human(prompt)
         result[PROMPT_HUMAN] = re.sub(r"<\|eot_id\|>", "", result[PROMPT_HUMAN])
 
         try:
-            contexts: list[dict[str, Any]] = orjson.loads(result.get(PROMPT_CONTEXT, ""))
+            contexts: list[dict[str, Any]] = orjson.loads(
+                result.get(PROMPT_CONTEXT, "")
+            )
         except orjson.JSONDecodeError:
             print("Failed to parse Contexts: ", result.get(PROMPT_CONTEXT, ""))
             contexts = []
@@ -106,7 +121,9 @@ class RAFTResponseParser(BaseOutputParser):
 
         parsed_result = {
             "question": result.get(PROMPT_HUMAN, ""),
-            "prompt": "\n".join([result.get(PROMPT_SYSTEM, ""), result.get(PROMPT_CONTEXT, "")]),
+            "prompt": "\n".join(
+                [result.get(PROMPT_SYSTEM, ""), result.get(PROMPT_CONTEXT, "")]
+            ),
             "answer": result[PROMPT_ASSISTANT],
             **context_contents,
         }
