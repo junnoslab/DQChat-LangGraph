@@ -11,13 +11,20 @@ class GraphBuilder:
 
     def build(self) -> CompiledStateGraph:
         # Add nodes to the graph
-        for node in Nodes:
+        non_conditional_nodes = [node for node in Nodes if not node.is_conditional]
+        for node in non_conditional_nodes:
             self.graph.add_node(*node.node_action_binding)
 
         # Add edges to the graph
         self.graph.add_edge(start_key=START, end_key=Nodes.RETRIEVER_PREPARER.key)
-        self.graph.add_edge(
-            start_key=Nodes.RETRIEVER_PREPARER.key, end_key=Nodes.QUESTIONS_LOADER.key
+        # https://langchain-ai.github.io/langgraph/concepts/low_level/#conditional-edges
+        self.graph.add_conditional_edges(
+            source=Nodes.RETRIEVER_PREPARER.key,
+            path=Nodes.RUNMODE_CHECKER.runnable,
+            path_map={
+                "raft_dataset": Nodes.QUESTIONS_LOADER.key,
+                "inference": Nodes.RESULT_INFERENCER.key,
+            },
         )
         self.graph.add_edge(
             start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key
@@ -27,7 +34,7 @@ class GraphBuilder:
             end_key=Nodes.QA_DATASET_CHECKPOINTER.key,
         )
         self.graph.add_edge(start_key=Nodes.QA_DATASET_CHECKPOINTER.key, end_key=END)
-        # https://langchain-ai.github.io/langgraph/concepts/low_level/#conditional-edges
+        self.graph.add_edge(start_key=Nodes.RESULT_INFERENCER.key, end_key=END)
 
         # Compile the graph
         compiled_graph = self.graph.compile()

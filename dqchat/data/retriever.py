@@ -71,12 +71,13 @@ def prepare_retriever(state: State, config: dict) -> State:
     Retrieve the data from the vector store.\n
     :param state: GraphState
     :param config: Configuration for Graph
-    :return: GraphState
+    :return: State
     """
+    config = config["configurable"]
     store = Store(
-        embedding_model_name=config["configurable"]["embedding_model_name"],
-        db_path=config["configurable"]["vector_db_path"],
-        collection_name=config["configurable"]["vector_db_collection_name"],
+        embedding_model_name=config["embedding_model_name"],
+        db_path=config["vector_db_path"],
+        collection_name=config["vector_db_collection_name"],
     )
     retriever = Retriever(vector_store=store)
 

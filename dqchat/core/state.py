@@ -1,4 +1,4 @@
-from typing import Optional, Literal, TypeAlias, TypedDict
+from typing import Optional, TypedDict
 
 from datasets import IterableDataset
 from langchain_core.retrievers import BaseRetriever
@@ -14,15 +14,13 @@ from ..const import (
 )
 from ..data.parser import RAFTResponse
 from ..secret import HF_ACCESS_TOKEN
+from ..utils.runmode import RunMode
 
 
 class State(TypedDict):
     questions: Optional[IterableDataset]
     retriever: Optional[BaseRetriever]
     responses: list[RAFTResponse]
-
-
-RunMode: TypeAlias = Literal["raft_dataset", "inference"]
 
 
 class Config(TypedDict):
