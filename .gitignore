@@ -10,6 +10,8 @@ secrets*
 
 # VectorDB
 /db
+/output/*
+/wandb
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,python,macos,linux,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,python,macos,linux,visualstudiocode

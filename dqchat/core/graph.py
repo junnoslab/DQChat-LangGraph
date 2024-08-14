@@ -3,7 +3,6 @@ from langgraph.graph.state import CompiledStateGraph
 
 from .nodes import Nodes
 from .state import State, Config
-from ..validator import validate
 
 
 class GraphBuilder:
@@ -16,27 +15,19 @@ class GraphBuilder:
             self.graph.add_node(*node.node_action_binding)
 
         # Add edges to the graph
-        # Start -> Question Dataset loader
-        self.graph.add_edge(start_key=START, end_key=Nodes.QUESTIONS_LOADER.key)
-        # Question Dataset loader -> VectorDB context retriever
+        self.graph.add_edge(start_key=START, end_key=Nodes.RETRIEVER_PREPARER.key)
         self.graph.add_edge(
-            start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.RETRIEVER_PREPARER.key
+            start_key=Nodes.RETRIEVER_PREPARER.key, end_key=Nodes.QUESTIONS_LOADER.key
         )
-        # VectorDB context retriever -> QA LLM
         self.graph.add_edge(
-            start_key=Nodes.RETRIEVER_PREPARER.key, end_key=Nodes.QUESTION_ANSWERER.key
+            start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key
         )
-        # QA LLM -> Answer Validator LLM
         self.graph.add_edge(
-            start_key=Nodes.QUESTION_ANSWERER.key, end_key=Nodes.ANSWER_VALIDATOR.key
+            start_key=Nodes.QUESTION_ANSWERER.key,
+            end_key=Nodes.QA_DATASET_CHECKPOINTER.key,
         )
-        # Answer Validator LLM -> if invalid: QA LLM, if valid: END
+        self.graph.add_edge(start_key=Nodes.QA_DATASET_CHECKPOINTER.key, end_key=END)
         # https://langchain-ai.github.io/langgraph/concepts/low_level/#conditional-edges
-        self.graph.add_conditional_edges(
-            source=Nodes.ANSWER_VALIDATOR.key,
-            path=validate,
-            path_map={"invalid": END, "valid": END},
-        )
 
         # Compile the graph
         compiled_graph = self.graph.compile()

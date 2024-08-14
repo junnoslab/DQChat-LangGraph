@@ -1,4 +1,4 @@
-from typing import Optional, TypedDict
+from typing import Optional, Literal, TypeAlias, TypedDict
 
 from datasets import IterableDataset
 from langchain_core.retrievers import BaseRetriever
@@ -22,7 +22,11 @@ class State(TypedDict):
     responses: list[RAFTResponse]
 
 
+RunMode: TypeAlias = Literal["raft_dataset", "inference"]
+
+
 class Config(TypedDict):
+    run_mode: RunMode
     model_name: str
     embedding_model_name: str
     dataset_name: str
@@ -34,14 +38,28 @@ class Config(TypedDict):
     vector_db_collection_name: str
 
     @classmethod
-    def default_config(cls) -> "Config":
+    def default_config(
+        cls,
+        run_mode: Optional[RunMode] = None,
+        model_name: Optional[str] = None,
+        embedding_model_name: Optional[str] = None,
+        dataset_name: Optional[str] = None,
+        dataset_config: Optional[str] = None,
+        dataset_questions_content_column: Optional[str] = None,
+        hf_token: Optional[str] = None,
+        vector_db_path: Optional[str] = None,
+        vector_db_collection_name: Optional[str] = None,
+    ) -> "Config":
         return Config(
-            model_name=HF_LLM_MODEL_NAME,
-            embedding_model_name=HF_EMBEDDING_MODEL_NAME,
-            dataset_name=HF_DATASET_NAME,
-            dataset_config=HF_CONFIG_QUESTIONS,
-            dataset_questions_content_column=HF_QUESTIONS_DATASET_CONTENT_COL,
-            hf_access_token=HF_ACCESS_TOKEN,
-            vector_db_path=CHROMA_DB_PATH,
-            vector_db_collection_name=CHROMA_COLLECTION_NAME,
+            run_mode=run_mode or "inference",
+            model_name=model_name or HF_LLM_MODEL_NAME,
+            embedding_model_name=embedding_model_name or HF_EMBEDDING_MODEL_NAME,
+            dataset_name=dataset_name or HF_DATASET_NAME,
+            dataset_config=dataset_config or HF_CONFIG_QUESTIONS,
+            dataset_questions_content_column=dataset_questions_content_column
+            or HF_QUESTIONS_DATASET_CONTENT_COL,
+            hf_access_token=hf_token or HF_ACCESS_TOKEN,
+            vector_db_path=vector_db_path or CHROMA_DB_PATH,
+            vector_db_collection_name=vector_db_collection_name
+            or CHROMA_COLLECTION_NAME,
         )

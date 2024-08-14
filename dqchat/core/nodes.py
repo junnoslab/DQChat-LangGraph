@@ -4,7 +4,7 @@ from langchain_core.runnables.base import RunnableLike
 
 from ..data import load_questions, prepare_retriever, save
 from ..model import generate_raft_dataset
-from ..validator.validator import test, validate
+from ..validator.validator import test
 
 
 class Nodes(StrEnum):
@@ -16,12 +16,14 @@ class Nodes(StrEnum):
     - `vt` for vector database nodes
     """
 
-    QUESTIONS_LOADER = "ds_loader_questions"
-    """Questions dataset loader node"""
     RETRIEVER_PREPARER = "vt_preparer_retriever"
     """VectorDB retriever preparation node"""
+    QUESTIONS_LOADER = "ds_loader_questions"
+    """Questions dataset loader node"""
     QUESTION_ANSWERER = "lm_answerer_question"
     """Question answering language model inference node"""
+    QA_DATASET_CHECKPOINTER = "ds_checkpoint_qa"
+    """Question answering dataset checkpointing node"""
     ANSWER_VALIDATOR = "lm_validator_answer"
     """Answer validation language model inference node"""
 
@@ -45,8 +47,10 @@ class Nodes(StrEnum):
             return prepare_retriever
         elif self is Nodes.QUESTION_ANSWERER:
             return generate_raft_dataset
-        elif self is Nodes.ANSWER_VALIDATOR:
+        elif self is Nodes.QA_DATASET_CHECKPOINTER:
             return save
+        elif self is Nodes.ANSWER_VALIDATOR:
+            return test
         else:
             raise ValueError(f"Runnable for node {self} is not defined.")
 

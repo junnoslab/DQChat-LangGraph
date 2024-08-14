@@ -7,7 +7,6 @@ from langchain_core.prompts import (
 from langchain_core.documents import Document
 from langchain_core.prompt_values import ChatPromptValue
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from langsmith import traceable
 from transformers import AutoTokenizer
 from transformers.pipelines import Pipeline, pipeline
 import orjson
