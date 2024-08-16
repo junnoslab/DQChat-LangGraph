@@ -23,9 +23,10 @@ class GraphBuilder:
             path=Nodes.RUNMODE_CHECKER.runnable,
             path_map={
                 "raft_dataset": Nodes.QUESTIONS_LOADER.key,
-                "inference": Nodes.RESULT_INFERENCER.key,
+                "inference": Nodes.INFERENCE_PREPARER.key,
             },
         )
+        # Dataset generator
         self.graph.add_edge(
             start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key
         )
@@ -34,7 +35,18 @@ class GraphBuilder:
             end_key=Nodes.QA_DATASET_CHECKPOINTER.key,
         )
         self.graph.add_edge(start_key=Nodes.QA_DATASET_CHECKPOINTER.key, end_key=END)
-        self.graph.add_edge(start_key=Nodes.RESULT_INFERENCER.key, end_key=END)
+        # Inference
+        self.graph.add_conditional_edges(
+            source=Nodes.INFERENCE_PREPARER.key,
+            path=Nodes.INPUT_RETRIEVER.runnable,
+            path_map={
+                "next": Nodes.RESULT_INFERENCER.key,
+                "exit": END,
+            },
+        )
+        self.graph.add_edge(
+            start_key=Nodes.RESULT_INFERENCER.key, end_key=Nodes.INFERENCE_PREPARER.key
+        )
 
         # Compile the graph
         compiled_graph = self.graph.compile()

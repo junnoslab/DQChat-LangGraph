@@ -3,7 +3,12 @@ from enum import Enum
 from langchain_core.runnables.base import RunnableLike
 
 from ..data import load_questions, prepare_retriever, save
-from ..model import generate_raft_dataset, inference
+from ..model import (
+    generate_raft_dataset,
+    inference,
+    prepare_for_inference,
+    retrieve_input,
+)
 from ..utils.runmode_check import check_runmode
 
 
@@ -29,6 +34,10 @@ class Nodes(Enum):
     """Question answering dataset checkpointing node"""
     # ANSWER_VALIDATOR = "lm_validator_answer"
     # """Answer validation language model inference node"""
+    INFERENCE_PREPARER = "lm_preparer_inference"
+    """Inference preparation language model node"""
+    INPUT_RETRIEVER = "c_input_retriever"
+    """Input retriever conditional node"""
     RESULT_INFERENCER = "lm_inferencer_result"
     """Result inference language model inference node"""
 
@@ -66,6 +75,10 @@ class Nodes(Enum):
             return save
         # elif self is Nodes.ANSWER_VALIDATOR:
         #     return test
+        elif self is Nodes.INFERENCE_PREPARER:
+            return prepare_for_inference
+        elif self is Nodes.INPUT_RETRIEVER:
+            return retrieve_input
         elif self is Nodes.RESULT_INFERENCER:
             return inference
         else:

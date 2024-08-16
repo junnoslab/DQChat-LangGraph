@@ -2,6 +2,7 @@ from typing import Optional, TypedDict
 
 from datasets import IterableDataset
 from langchain_core.retrievers import BaseRetriever
+from vllm import LLM, SamplingParams
 
 from ..const import (
     HF_DATASET_NAME,
@@ -18,6 +19,10 @@ from ..utils.runmode import RunMode
 
 
 class State(TypedDict):
+    question_for_inference: Optional[str]
+    llm_for_inference: Optional[LLM]
+    sampling_params_for_inference: Optional[SamplingParams]
+
     questions: Optional[IterableDataset]
     retriever: Optional[BaseRetriever]
     responses: list[RAFTResponse]
