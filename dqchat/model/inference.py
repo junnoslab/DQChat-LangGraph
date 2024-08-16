@@ -35,17 +35,6 @@ def __prepare_prompt_template() -> ChatPromptTemplate:
     )
 
 
-def retrieve_input(state: State, config: dict) -> Literal["exit", "next"]:
-    question = input("질문을 입력하세요: ")
-
-    if question == "exit":
-        state["question_for_inference"] = None
-        return "exit"
-
-    state["question_for_inference"] = question
-    return "next"
-
-
 def prepare_for_inference(state: State, config: dict) -> State:
     if (
         state["llm_for_inference"] is not None
@@ -81,6 +70,19 @@ def prepare_for_inference(state: State, config: dict) -> State:
     state["sampling_params_for_inference"] = sampling_params
 
     return state
+
+
+def retrieve_input(state: State, config: dict) -> State:
+    question = input("질문을 입력하세요: ")
+    state["question_for_inference"] = question
+    return state
+
+
+def validate_input(state: State, config: dict) -> Literal["exit", "next"]:
+    question = state.get("question_for_inference", "")
+    if question == "exit" or question == "":
+        return "exit"
+    return "next"
 
 
 def inference(state: State, config: dict) -> State:

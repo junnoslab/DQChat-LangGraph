@@ -36,9 +36,12 @@ class GraphBuilder:
         )
         self.graph.add_edge(start_key=Nodes.QA_DATASET_CHECKPOINTER.key, end_key=END)
         # Inference
+        self.graph.add_edge(
+            start_key=Nodes.INFERENCE_PREPARER.key, end_key=Nodes.INPUT_RETRIEVER.key
+        )
         self.graph.add_conditional_edges(
-            source=Nodes.INFERENCE_PREPARER.key,
-            path=Nodes.INPUT_RETRIEVER.runnable,
+            source=Nodes.INPUT_RETRIEVER.key,
+            path=Nodes.INPUT_VALIDATOR.runnable,
             path_map={
                 "next": Nodes.RESULT_INFERENCER.key,
                 "exit": END,

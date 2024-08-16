@@ -8,6 +8,7 @@ from ..model import (
     inference,
     prepare_for_inference,
     retrieve_input,
+    validate_input,
 )
 from ..utils.runmode_check import check_runmode
 
@@ -17,6 +18,7 @@ class Nodes(Enum):
     Nodes in the state graph.\n
     Their identifiers are defined with prefix for each node type.\n
     - `c` for conditional nodes
+    - `hi` for human interface nodes
     - `ds` for dataset nodes
     - `lm` for language model nodes
     - `vt` for vector database nodes
@@ -36,8 +38,10 @@ class Nodes(Enum):
     # """Answer validation language model inference node"""
     INFERENCE_PREPARER = "lm_preparer_inference"
     """Inference preparation language model node"""
-    INPUT_RETRIEVER = "c_input_retriever"
+    INPUT_RETRIEVER = "hi_input_retriever"
     """Input retriever conditional node"""
+    INPUT_VALIDATOR = "c_input_validator"
+    """Input validation conditional node"""
     RESULT_INFERENCER = "lm_inferencer_result"
     """Result inference language model inference node"""
 
@@ -79,6 +83,8 @@ class Nodes(Enum):
             return prepare_for_inference
         elif self is Nodes.INPUT_RETRIEVER:
             return retrieve_input
+        elif self is Nodes.INPUT_VALIDATOR:
+            return validate_input
         elif self is Nodes.RESULT_INFERENCER:
             return inference
         else:
