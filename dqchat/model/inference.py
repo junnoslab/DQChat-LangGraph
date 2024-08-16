@@ -10,6 +10,7 @@ from langchain_core.documents import Document
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
 import orjson
+import torch
 
 from ..const import RAG_PROMPT_TEMPLATE
 from ..core.state import State
@@ -63,8 +64,11 @@ def prepare_for_inference(state: State, config: dict) -> State:
 
     llm = LLM(
         model="output/t1/checkpoint-1400",
+        dtype=torch.bfloat16,
+        enforce_eager=True,
+        quantization="bitsandbytes",
+        load_format="bitsandbytes",
         gpu_memory_utilization=0.7,
-        download_dir="../models",
     )
     sampling_params = SamplingParams(
         temperature=0.6,
@@ -89,7 +93,9 @@ def inference(state: State, config: dict) -> State:
     prompt_template = __prepare_prompt_template()
     prompt_template.bind(context=context, question=prompt)
     outputs = llm.generate(prompts=prompt, sampling_params=sampling_params)
-    print(outputs)
+
+    for output in outputs:
+        print(output.outputs[0].text)
 
     return state
 
