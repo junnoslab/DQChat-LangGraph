@@ -1,3 +1,5 @@
+from typing import Optional
+
 from langchain_core.prompts import (
     ChatPromptTemplate,
     PromptTemplate,
@@ -37,14 +39,12 @@ def __prepare_prompt_template() -> ChatPromptTemplate:
     )
 
 
-def __generate_pipeline(model_name: str) -> Pipeline:
+def __generate_pipeline(model_name: str, cache_dir: Optional[str] = None) -> Pipeline:
     pipe = pipeline(
         task="text-generation",
         model=model_name,
         device_map="auto",
-        model_kwargs={
-            "torch_dtype": torch.bfloat16,
-        },
+        model_kwargs={"torch_dtype": torch.bfloat16, "cache_dir": cache_dir},
     )
 
     return pipe
@@ -80,7 +80,9 @@ def generate_raft_dataset(state: State, config: dict) -> State:
     llm_model_name: str = config["model_name"]
 
     # Prepare pipeline
-    pipeline: Pipeline = __generate_pipeline(model_name=llm_model_name)
+    pipeline: Pipeline = __generate_pipeline(
+        model_name=llm_model_name, cache_dir=config["model_cache_path"]
+    )
 
     # Prepare prompt template
     prompt_template: ChatPromptTemplate = __prepare_prompt_template()

@@ -45,6 +45,7 @@ def train():
         # quantization_config=bnb_config,
         torch_dtype=torch.bfloat16,
         device_map="auto",
+        cache_dir="/home/work/.nlp-data/models",
     )
 
     # Load dataset
@@ -52,6 +53,7 @@ def train():
         path=_DATASET_ID,
         name="question-answer",
         split="train",
+        cache_dir="/home/work/.nlp-data/datasets",
     )
 
     print(dataset.num_rows)
@@ -86,13 +88,13 @@ def train():
     training_args = SFTConfig(
         output_dir="output",
         num_train_epochs=800,
-        per_device_train_batch_size=8,
+        per_device_train_batch_size=4,
         max_seq_length=2048,
         learning_rate=5e-4,
         lr_scheduler_type="cosine",
         warmup_ratio=0.1,
         optim="paged_adamw_8bit",
-        dataloader_num_workers=16,
+        dataloader_num_workers=8,
         save_strategy="steps",
         save_steps=200,
         logging_strategy="steps",

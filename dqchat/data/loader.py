@@ -12,6 +12,7 @@ def load_questions(state: State, config: dict) -> State:
     dataset: IterableDataset = load_dataset(
         path=config["dataset_name"],
         name=config["dataset_config"],
+        cache_dir=config["dataset_cache_path"],
         split="train",
         token=config["hf_access_token"],
         streaming=True,
