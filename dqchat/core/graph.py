@@ -1,13 +1,13 @@
-from langgraph.graph import StateGraph, START, END
-from langgraph.graph.state import CompiledStateGraph
+from langgraph.graph import START, END
+from langgraph.graph.state import CompiledStateGraph, StateGraph
 
+from . import Config, State
 from .nodes import Nodes
-from .state import State, Config
 
 
 class GraphBuilder:
     def __init__(self):
-        self.graph = StateGraph(State, config_schema=Config)
+        self.graph = StateGraph(state_schema=State, config_schema=Config)
 
     def build(self) -> CompiledStateGraph:
         # Add nodes to the graph
@@ -22,19 +22,28 @@ class GraphBuilder:
             source=Nodes.RETRIEVER_PREPARER.key,
             path=Nodes.RUNMODE_CHECKER.runnable,
             path_map={
-                "raft_dataset": Nodes.QUESTIONS_LOADER.key,
+                "raft_dataset": Nodes.RF_QUESTIONS_LOADER.key,
                 "inference": Nodes.INFERENCE_PREPARER.key,
             },
         )
         # Dataset generator
         self.graph.add_edge(
-            start_key=Nodes.QUESTIONS_LOADER.key, end_key=Nodes.QUESTION_ANSWERER.key
+            start_key=Nodes.RF_QUESTIONS_LOADER.key,
+            end_key=Nodes.RF_INVOKER_CHAIN_BUILDER.key,
         )
         self.graph.add_edge(
-            start_key=Nodes.QUESTION_ANSWERER.key,
-            end_key=Nodes.QA_DATASET_CHECKPOINTER.key,
+            start_key=Nodes.RF_INVOKER_CHAIN_BUILDER.key,
+            end_key=Nodes.RF_QA_INVOKER.key,
         )
-        self.graph.add_edge(start_key=Nodes.QA_DATASET_CHECKPOINTER.key, end_key=END)
+        self.graph.add_conditional_edges(
+            source=Nodes.RF_QA_INVOKER.key,
+            path=Nodes.RF_ANSWER_VALIDATOR.runnable,
+            path_map={
+                "pass": Nodes.RF_QA_DATASET_CHECKPOINTER.key,
+                "fail": Nodes.RF_QUESTIONS_LOADER.key,
+            },
+        )
+        self.graph.add_edge(start_key=Nodes.RF_QA_DATASET_CHECKPOINTER.key, end_key=END)
         # Inference
         self.graph.add_edge(
             start_key=Nodes.INFERENCE_PREPARER.key, end_key=Nodes.INPUT_RETRIEVER.key

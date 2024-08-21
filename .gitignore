@@ -6,7 +6,7 @@
 *.egg-info
 
 # Secrets
-secrets*
+secret*
 
 # Playgrounds
 /playground

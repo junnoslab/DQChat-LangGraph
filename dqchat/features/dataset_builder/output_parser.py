@@ -3,8 +3,8 @@ import inspect
 import orjson
 import re
 
+from langchain.pydantic_v1 import BaseModel
 from langchain.schema import BaseOutputParser
-from pydantic import BaseModel
 
 from ..const import (
     POOR_DISTANCE_THRESHOLD,
@@ -86,6 +86,7 @@ class RAFTResponseParser(BaseOutputParser):
     def __split_sections(text: str) -> list[str]:
         return re.split(r"\n{2,}", text)
 
+    @staticmethod
     def __parse_section_content(section: str, pattern: str) -> dict[str, str]:
         if match := re.match(pattern=pattern, string=section):
             prefix = match.group(1)
@@ -93,7 +94,7 @@ class RAFTResponseParser(BaseOutputParser):
             return {prefix: section}
         return {}
 
-    def parse(self, text: str):
+    def parse(self, text: str) -> RAFTResponse:
         sections = RAFTResponseParser.__split_sections(text)
 
         result: dict[str, Any] = {}

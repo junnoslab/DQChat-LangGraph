@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
 requires-python = ">= 3.10, < 3.11"
-dependencies = [ "torch>=2.4.0,<3", "langchain-core>=0.2.30,<0.3", "langgraph>=0.2.3,<0.3", "chromadb>=0.5.5,<0.6", "transformers>=4.44.0,<5", "datasets>=2.20.0,<3", "accelerate>=0.33.0,<0.34", "peft>=0.12.0,<0.13", "trl>=0.9.6,<0.10", "pydantic>=2.8.2,<3", "tqdm>=4.66.5,<5", "bitsandbytes>=0.42.0,<0.44", "wandb>=0.17.6,<0.18", "pillow>=10.4.0,<11", "sentence-transformers>=3.0.1,<4", "orjson>=3.10.7,<4", "langchain>=0.2.13,<0.3", "vllm>=0.5.4,<0.6"]
+dependencies = [ "torch>=2.4.0,<3", "langchain-core>=0.2.30,<0.3", "langgraph>=0.2.3,<0.3", "chromadb>=0.5.5,<0.6", "transformers>=4.44.0,<5", "datasets>=2.20.0,<3", "accelerate>=0.33.0,<0.34", "peft>=0.12.0,<0.13", "trl>=0.9.6,<0.10", "pydantic>=2.8.2,<3", "tqdm>=4.66.5,<5", "bitsandbytes>=0.42.0,<0.44", "wandb>=0.17.6,<0.18", "pillow>=10.4.0,<11", "sentence-transformers>=3.0.1,<4", "orjson>=3.10.7,<4", "langchain>=0.2.13,<0.3", "vllm>=0.5.4,<0.6", "langchain-community>=0.2.12,<0.3"]
 
 [build-system]
 requires = ["setuptools"]
@@ -26,12 +26,15 @@ linux = "5.15.0"
 [tool.pixi.tasks]
 run = "python -m dqchat"
 r = { depends-on = ["run"] }
+generate_raft_dataset = "python -m dqchat --mode raft_dataset"
+gd = { depends-on = ["generate_raft_dataset"] }
 trainer = "python -m trainer"
 t = { depends-on = ["trainer"] }
 
 [tool.pixi.dependencies]
 setuptools = ">=72.1.0,<73"
 pre-commit = ">=3.7.1,<4"
+mypy = ">=1.11.1,<2"
 
 [tool.pixi.target.linux-64.dependencies]
 pytorch-cuda = "12.1.*"
