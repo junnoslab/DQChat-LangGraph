@@ -9,12 +9,11 @@ def guard_type(value: Any, expected_type: Type[__T]) -> __T:
         return value
     elif value is None:
         raise TypeError(
-            f"Type mismatch: Expected solid type {expected_type.__name__}, but received 'None'"
-            f"Value: {repr(value)}"
+            f"Type mismatch: Expected solid type '{expected_type.__name__}', but received 'None'.\n"
         )
     else:
         actual_type = type(value).__name__
         raise TypeError(
-            f"Type mismatch: Expected {expected_type.__name__}, but received {actual_type}."
+            f"Type mismatch: Expected '{expected_type.__name__}', but received {actual_type}.\n"
             f"Value: {repr(value)}"
         )
