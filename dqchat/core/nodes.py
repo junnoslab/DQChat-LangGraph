@@ -4,9 +4,9 @@ from langchain_core.runnables.base import RunnableLike
 
 from ..data import load_questions, prepare_retriever, save
 from ..features.dataset_builder import (
-    dataset_invoker_chain_builder,
-    dataset_invoker,
-    validate,
+    prepare_invoker as prepare_dataset_builder_invoker,
+    invoke as invoke_dataset_builder,
+    validate as validate_dataset_builder,
 )
 from ..llm import (
     load_model,
@@ -107,11 +107,11 @@ class Nodes(Enum):
         elif self is Nodes.RF_QUESTIONS_LOADER:
             return load_questions
         elif self is Nodes.RF_INVOKER_CHAIN_BUILDER:
-            return dataset_invoker_chain_builder
+            return prepare_dataset_builder_invoker
         elif self is Nodes.RF_QA_INVOKER:
-            return dataset_invoker
+            return invoke_dataset_builder
         elif self is Nodes.RF_ANSWER_VALIDATOR:
-            return validate
+            return validate_dataset_builder
         elif self is Nodes.RF_QA_DATASET_CHECKPOINTER:
             return save
 
