@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
 requires-python = ">= 3.11, < 3.12"
-dependencies = [ "torch>=2.4.0,<3", "langchain>=0.2.13,<0.3", "langgraph>=0.2.3,<0.3", "chromadb>=0.5.5,<0.6", "transformers>=4.44.0,<5", "datasets>=2.20.0,<3", "accelerate>=0.33.0,<0.34", "peft>=0.12.0,<0.13", "trl>=0.9.6,<0.10", "pydantic>=2.8.2,<3", "tqdm>=4.66.5,<5", "bitsandbytes>=0.42.0,<0.44", "wandb>=0.17.6,<0.18", "pillow>=10.4.0,<11", "sentence-transformers>=3.0.1,<4", "orjson>=3.10.7,<4", "vllm>=0.5.4,<0.6", "langchain-community>=0.2.12,<0.3"]
+dependencies = []
+
+[project.optional-dependencies]
+default = []
+test = []
 
 [build-system]
 requires = ["setuptools"]
@@ -32,12 +36,35 @@ trainer = "python -m trainer"
 t = { depends-on = ["trainer"] }
 
 [tool.pixi.dependencies]
-setuptools = ">=72.1.0,<73"
 pre-commit = ">=3.7.1,<4"
 mypy = ">=1.11.1,<2"
+pytorch = ">=2.4.0,<3"
+langchain = ">=0.2.14,<0.3"
+langgraph = ">=0.2.14,<0.3"
+transformers = ">=4.44.2,<5"
+datasets = ">=2.21.0,<3"
+peft = ">=0.12.0,<0.13"
+trl = ">=0.9.6,<0.10"
+sentence-transformers = ">=3.0.1,<4"
+accelerate = ">=0.33.0,<0.34"
+bitsandbytes = ">=0.43.3,<0.44"
+chromadb = ">=0.5.5,<0.6"
+orjson = ">=3.10.7,<4"
+tqdm = ">=4.66.5,<5"
+pillow = ">=9.4.0,<10"
 
 [tool.pixi.target.linux-64.dependencies]
 pytorch-cuda = "12.1.*"
+
+[tool.pixi.feature.test.dependencies]
+
+[tool.pixi.feature.test.tasks]
+test = "pytest"
+test_state = "python tests/test_state.py"
+
+[tool.pixi.environments]
+default = ["default"]
+test = ["default", "test"]
 
 [tool.pyright]
 venvPath = "."
