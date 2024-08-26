@@ -4,3 +4,4 @@ from .inference import (
     retrieve_input as retrieve_input,
     validate_input as validate_input,
 )
+from .loader import load_model as load_model

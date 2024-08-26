@@ -9,6 +9,7 @@ from ..features.dataset_builder import (
     validate,
 )
 from ..llm import (
+    load_model,
     prepare_for_inference,
     inference,
     retrieve_input,
@@ -34,6 +35,8 @@ class Nodes(Enum):
     """Run mode checker conditional node"""
 
     # RAFT Dataset Builder
+    RF_MODEL_LOADER = "lm_loader_model"
+    """LLM model loader node"""
     RF_QUESTIONS_LOADER = "ds_loader_questions"
     """Questions dataset loader node"""
     RF_INVOKER_CHAIN_BUILDER = "lm_builder_invoker_chain"
@@ -99,6 +102,8 @@ class Nodes(Enum):
             return check_runmode
 
         # RAFT Dataset Builder
+        elif self is Nodes.RF_MODEL_LOADER:
+            return load_model
         elif self is Nodes.RF_QUESTIONS_LOADER:
             return load_questions
         elif self is Nodes.RF_INVOKER_CHAIN_BUILDER:

@@ -12,6 +12,7 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "--mode", dest="mode", type=str, choices=RunMode.__args__, required=False
     )
+    parser.add_argument("--cache-dir", dest="cache_dir", type=str, required=False)
 
     args = parser.parse_args()
 
@@ -33,7 +34,10 @@ def main():
             "question_answer": {"question": ""},
             "dataset_generator": {},
         },
-        config=default_config(run_mode=args.mode),
+        config=default_config(
+            run_mode=args.mode,
+            model_cache_path=args.cache_dir,
+        ),
     )
 
 

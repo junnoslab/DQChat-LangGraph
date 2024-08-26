@@ -22,11 +22,15 @@ class GraphBuilder:
             source=Nodes.RETRIEVER_PREPARER.key,
             path=Nodes.RUNMODE_CHECKER.runnable,
             path_map={
-                "raft_dataset": Nodes.RF_QUESTIONS_LOADER.key,
+                "raft_dataset": Nodes.RF_MODEL_LOADER.key,
                 "inference": Nodes.INFERENCE_PREPARER.key,
             },
         )
         # Dataset generator
+        self.graph.add_edge(
+            start_key=Nodes.RF_MODEL_LOADER.key,
+            end_key=Nodes.RF_QUESTIONS_LOADER.key,
+        )
         self.graph.add_edge(
             start_key=Nodes.RF_QUESTIONS_LOADER.key,
             end_key=Nodes.RF_INVOKER_CHAIN_BUILDER.key,

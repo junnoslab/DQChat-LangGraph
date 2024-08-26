@@ -117,6 +117,7 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    "inference.py" # Temporary, remove later.
 ]
 
 # Same as Black.

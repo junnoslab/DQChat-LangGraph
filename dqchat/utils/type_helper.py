@@ -17,3 +17,6 @@ def guard_type(value: Any, expected_type: Type[__T]) -> __T:
             f"Type mismatch: Expected '{expected_type.__name__}', but received {actual_type}.\n"
             f"Value: {repr(value)}"
         )
+
+
+# TODO: Add `None` type unwrapper.

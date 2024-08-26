@@ -1,7 +1,6 @@
 from typing import Literal
 
 from langchain_core.documents import Document
-from vllm import LLM, SamplingParams
 import orjson
 
 from ..const import RAG_PROMPT_TEMPLATE, USER_TEMPLATE
