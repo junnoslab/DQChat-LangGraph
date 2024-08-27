@@ -42,6 +42,14 @@ class DatasetGeneratorState(BaseModel):
             raise ValueError(f"Invalid id format:{v}")
 
 
+class TrainerState(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    dataset: Optional[Dataset] = Field(default=None)
+    invoker: Optional[Iterator] = Field(default=None)
+
+
 class State(BaseModel):
     class Config:
         arbitrary_types_allowed = True
@@ -55,3 +63,4 @@ class State(BaseModel):
 
     question_answer: QAState = Field(default=QAState())
     dataset_generator: DatasetGeneratorState = Field(default=DatasetGeneratorState())
+    trainer: TrainerState = Field(default=TrainerState())

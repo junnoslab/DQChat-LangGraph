@@ -24,6 +24,7 @@ class GraphBuilder:
             path_map={
                 "raft_dataset": Nodes.RF_MODEL_LOADER.key,
                 "inference": Nodes.INFERENCE_PREPARER.key,
+                "train": Nodes.TR_MODEL_LOADER.key,
             },
         )
         # Dataset generator

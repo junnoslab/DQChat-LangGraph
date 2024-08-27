@@ -33,6 +33,7 @@ def main():
         input={
             "question_answer": {"question": ""},
             "dataset_generator": {},
+            "trainer": {},
         },
         config=default_config(
             run_mode=args.mode,
