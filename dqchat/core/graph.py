@@ -64,6 +64,23 @@ class GraphBuilder:
         self.graph.add_edge(
             start_key=Nodes.RESULT_INFERENCER.key, end_key=Nodes.INFERENCE_PREPARER.key
         )
+        # Trainer
+        self.graph.add_edge(
+            start_key=Nodes.TR_MODEL_LOADER.key,
+            end_key=Nodes.TR_DATASET_LOADER.key,
+        )
+        self.graph.add_edge(
+            start_key=Nodes.TR_DATASET_LOADER.key,
+            end_key=Nodes.TR_INVOKER_BUILDER.key,
+        )
+        self.graph.add_edge(
+            start_key=Nodes.TR_INVOKER_BUILDER.key,
+            end_key=Nodes.TR_MODEL_TRAINER.key,
+        )
+        self.graph.add_edge(
+            start_key=Nodes.TR_MODEL_TRAINER.key,
+            end_key=END,
+        )
 
         # Compile the graph
         compiled_graph = self.graph.compile()

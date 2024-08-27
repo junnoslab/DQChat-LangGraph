@@ -2,13 +2,14 @@ from enum import Enum
 
 from langchain_core.runnables.base import RunnableLike
 
-from ..data import load_questions, prepare_retriever
+from ..data import load_questions, prepare_retriever, load_raft_dataset
 from ..features.dataset_generator import (
     prepare_invoker as prepare_dataset_builder_invoker,
     invoke as invoke_dataset_builder,
     validate as validate_dataset_builder,
     save as save_dataset_builder,
 )
+from ..features.trainer import prepare_train, train
 from ..llm import (
     load_model,
     prepare_for_inference,
@@ -24,13 +25,13 @@ class Nodes(Enum):
     Nodes in the state graph.\n
     Their identifiers are defined with prefix for each node type.\n
     - `c` for conditional nodes
-    - `hi` for human interface nodes
+    - `ui` for human(user) interface nodes
     - `ds` for dataset nodes
     - `lm` for language model nodes
-    - `vt` for vector database nodes
+    - `rt` for retriever nodes
     """
 
-    RETRIEVER_PREPARER = "vt_preparer_retriever"
+    RETRIEVER_PREPARER = "rt_preparer_retriever"
     """VectorDB retriever preparation node"""
     RUNMODE_CHECKER = "c_check_runmode"
     """Run mode checker conditional node"""
@@ -68,12 +69,22 @@ class Nodes(Enum):
     # Question Answering
     INFERENCE_PREPARER = "lm_preparer_inference"
     """Inference preparation language model node"""
-    INPUT_RETRIEVER = "hi_input_retriever"
+    INPUT_RETRIEVER = "ui_input_retriever"
     """Input retriever conditional node"""
     INPUT_VALIDATOR = "c_input_validator"
     """Input validation conditional node"""
     RESULT_INFERENCER = "lm_inferencer_result"
     """Result inference language model inference node"""
+
+    # Trainer
+    TR_MODEL_LOADER = "lm_loader_model_trainer"
+    """Trainer model loader node"""
+    TR_DATASET_LOADER = "ds_loader_raft_dataset"
+    """RAFT dataset loader node"""
+    TR_INVOKER_BUILDER = "lm_builder_invoker"
+    """Trainer invoker builder node"""
+    TR_MODEL_TRAINER = "lm_trainer_model"
+    """Model training node"""
 
     @property
     def is_conditional(self) -> bool:
@@ -125,6 +136,18 @@ class Nodes(Enum):
             return validate_input
         elif self is Nodes.RESULT_INFERENCER:
             return inference
+
+        # Trainer
+        elif self is Nodes.TR_MODEL_LOADER:
+            return load_model
+        elif self is Nodes.TR_DATASET_LOADER:
+            return load_raft_dataset
+        elif self is Nodes.TR_INVOKER_BUILDER:
+            return prepare_train
+        elif self is Nodes.TR_MODEL_TRAINER:
+            return train
+
+        # Fallback
         else:
             raise ValueError(f"Runnable for node {self} is not defined.")
 
