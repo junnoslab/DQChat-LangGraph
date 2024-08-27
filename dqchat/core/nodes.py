@@ -3,7 +3,7 @@ from enum import Enum
 from langchain_core.runnables.base import RunnableLike
 
 from ..data import load_questions, prepare_retriever
-from ..features.dataset_builder import (
+from ..features.dataset_generator import (
     prepare_invoker as prepare_dataset_builder_invoker,
     invoke as invoke_dataset_builder,
     validate as validate_dataset_builder,
