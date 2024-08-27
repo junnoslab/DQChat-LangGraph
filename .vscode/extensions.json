@@ -1,5 +1,12 @@
 {
     "recommendations": [
-        "ms-python.mypy-type-checker"
+        "ms-python.mypy-type-checker",
+        "tamasfe.even-better-toml",
+        "github.copilot",
+        "eamodio.gitlens",
+        "ms-python.debugpy",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "njqdev.vscode-python-typehint"
     ]
 }

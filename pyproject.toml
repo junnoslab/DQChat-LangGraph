@@ -31,7 +31,9 @@ linux = "5.15.0"
 run = "python -m dqchat"
 r = { depends-on = ["run"] }
 generate_raft_dataset = "python -m dqchat --mode raft_dataset"
+generate_raft_dataset_using_cache = "python -m dqchat --mode raft_dataset --cache-dir '/home/work/.nlp-data/.cache'"
 gd = { depends-on = ["generate_raft_dataset"] }
+gdc = { depends-on = ["generate_raft_dataset_using_cache"] }
 trainer = "python -m trainer"
 t = { depends-on = ["trainer"] }
 
