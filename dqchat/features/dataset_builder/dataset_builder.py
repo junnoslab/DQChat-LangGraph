@@ -1,28 +1,22 @@
 from collections.abc import Iterator
-from typing import Any, TypedDict
 
 from datasets import Dataset
 from langchain_core.prompts import PromptTemplate
-from langchain_core.prompt_values import ChatPromptValue
+from langchain_core.prompt_values import StringPromptValue
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import (
-    Runnable,
-    RunnableLambda,
-    RunnablePassthrough,
-)
-from transformers import AutoTokenizer
+from langchain_core.runnables import Runnable, RunnablePassthrough
 from transformers.pipelines import Pipeline
 import tqdm
 
 from . import PROMPT_TEMPLATE
-from .output_parser import QAResponse, RAFTResponseParser
+from .output_parser import QAResponse, QAResponseParser
 from .retriever_parser import RetrieverParser
 from ..feature import BaseFeature
 from ...core import State
 from ...utils.type_helper import guard_type
 
 
-def dataset_invoker_chain_builder(state: State, config: dict) -> State:
+def prepare_invoker(state: State, config: dict) -> State:
     qa_agent = DatasetBuilder(state=state, config=config)
 
     invoker = qa_agent.invoker
@@ -31,93 +25,80 @@ def dataset_invoker_chain_builder(state: State, config: dict) -> State:
     return state
 
 
-def dataset_invoker(state: State, config: dict) -> State:
+def invoke(state: State, config: dict) -> State:
     invoker = state.dataset_generator.response_invoker
 
     if invoker is None:
         raise ValueError("No invoker to run.")
 
     for response in invoker:
-        print(response)
+        qa_response = guard_type(response, QAResponse).dict()
+
+        # Save in memory
+        try:
+            dataset = guard_type(state.dataset_generator.responses, Dataset)
+            dataset = dataset.add_item(qa_response)
+        except TypeError:
+            dataset = Dataset.from_list([qa_response])
+
+        state.dataset_generator.responses = dataset
 
     return state
 
 
-class PipelineInput(TypedDict):
-    pipeline: Pipeline
-    prompt: ChatPromptValue
-    config: dict[str, Any]
-
-
 class DatasetBuilder(BaseFeature[QAResponse]):
-    def build_chain(self) -> Runnable:
-        config = self.config["configurable"]
-        prompt_template = PromptTemplate.from_template(PROMPT_TEMPLATE)
+    def build_invoker(self) -> Iterator[QAResponse]:
+        questions = self.state.dataset_generator.questions
+        questions_dataset = guard_type(questions, Dataset)
 
-        # Prepare components
         retriever = guard_type(self.state.retriever, BaseRetriever)
         pipe = guard_type(self.state.llm, Pipeline)
+        tokenizer = pipe.tokenizer
+        tokenizer.padding_side = "left"
 
-        if retriever is None:
-            raise ValueError("Retriever is not initialized.")
+        def invoke_iterator(dataset: Dataset) -> Iterator[QAResponse]:
+            def prompt_iterator() -> Iterator[str]:
+                for question_dict in dataset:
+                    question = question_dict["question"]
 
-        def __run_pipeline(inputs: PipelineInput) -> str:
-            pipeline: Pipeline = inputs["pipeline"]
-            prompt: ChatPromptValue = inputs["prompt"]
-            pipeline_configuration: dict[str, Any] = inputs["config"]
+                    prompt_builder: Runnable = (
+                        {
+                            "context": retriever | RetrieverParser.docs_to_context,
+                            "question": RunnablePassthrough(),
+                        }
+                        | PromptTemplate.from_template(PROMPT_TEMPLATE)
+                    )
+                    prompt_template = prompt_builder.invoke(input=question)
+                    prompt = guard_type(prompt_template, StringPromptValue)
+                    yield prompt.to_string()
 
-            llm_model_name: str = pipeline_configuration["model_name"]
-            tokenizer = AutoTokenizer.from_pretrained(llm_model_name)
-
-            output = pipeline(
-                prompt.to_string(),
-                max_new_tokens=1024,
+            pipeline_iterator = pipe(
+                prompt_iterator(),
+                max_new_tokens=2048,
                 do_sample=True,
                 temperature=0.6,
                 top_p=0.9,
                 eos_token_id=[tokenizer.eos_token_id],
+                batch_size=32,
             )
-            list_output = guard_type(output, list)
+            for output in tqdm.tqdm(pipeline_iterator):
+                list_output = guard_type(output, list)
 
-            return list_output[0]["generated_text"]
+                generated_text = list_output[0]["generated_text"]
+                text = guard_type(generated_text, str)
 
-        chain: Runnable = (
-            {
-                "context": retriever | RetrieverParser.docs_to_context,
-                "question": RunnablePassthrough(),
-            }
-            | prompt_template
-            | {
-                "prompt": RunnablePassthrough(),
-                "pipeline": lambda _: pipe,
-                "config": lambda _: config,
-            }
-            | RunnableLambda(__run_pipeline)
-            | RAFTResponseParser()
-        )
+                parser = QAResponseParser(state=self.state, config=self.config)
+                response = parser.parse(text)
+                # Update qa_id after parsing
+                self.state.dataset_generator.qa_id += 1
 
-        return chain
+                try:
+                    safe_response = guard_type(response, QAResponse)
+                    yield safe_response
+                except TypeError:
+                    print("Skipping due to JSON parsing error.")
+                    continue
 
-    def build_invoker(self) -> Iterator[QAResponse]:
-        questions = self.state.dataset_generator.questions
-
-        if questions is None:
-            raise ValueError("Questions are not initialized.")
-
-        rag_chain: Runnable = self.build_chain()
-
-        def rag_invoke_iterator(chain: Runnable, dataset: IterableDataset):
-            pbar = tqdm.tqdm(dataset, total=3480)
-            for question_dict in pbar:
-                pbar.set_description(f"{question_dict['category']}")
-                pbar.set_postfix(q=question_dict["question"])
-                question = question_dict["question"]
-                output = chain.invoke(input=question)
-
-                response_output = guard_type(output, QAResponse)
-
-                yield response_output
-
-        iterator = rag_invoke_iterator(rag_chain, questions)
+        iterator = invoke_iterator(dataset=questions_dataset)
 
         return iterator

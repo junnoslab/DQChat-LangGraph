@@ -1,9 +1,11 @@
+from typing import Optional
 import orjson
 import re
 
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import BaseOutputParser
 
+from ...core import State
 from ...utils.type_helper import guard_type
 
 
@@ -57,26 +59,37 @@ class QAResponse(BaseModel):
     """
 
 
-class RAFTResponseParser(BaseOutputParser):
+class QAResponseParser(BaseOutputParser[Optional[QAResponse]]):
+    state: State
+    config: dict
+
     @staticmethod
     def __split_sections(text: str) -> list[str]:
         return re.split(r"\n{2,}", text)
 
-    def parse(self, text: str) -> QAResponse:
-        splitted_answer = RAFTResponseParser.__split_sections(text)
+    def parse(self, text: str) -> Optional[QAResponse]:
+        splitted_answer = QAResponseParser.__split_sections(text)
         json_match = re.search(r"\{.*\}", splitted_answer[-1], re.DOTALL)
 
-        if json_match:
-            json_string = json_match.group()
+        if not json_match:
+            print("Skipping due to json parsing failure.")
+            return None
 
+        json_string = json_match.group()
+        try:
             parsed_dict = orjson.loads(json_string)
-            safe_dict = guard_type(parsed_dict, dict)
-        else:
-            raise ValueError("No JSON object found in the response.")
+        except orjson.JSONDecodeError:
+            print("Skipping due to json parsing failure.")
+            return None
 
-        safe_dict["qa_id"] = "qa001"
-        safe_dict["dataset_id"] = "ds001"
+        safe_dict = guard_type(parsed_dict, dict)
+        safe_dict["dataset_id"] = self.state.dataset_generator.dataset_id
+        safe_dict["qa_id"] = self.state.dataset_generator.id
 
         response = QAResponse.parse_obj(safe_dict)
 
         return response
+
+    @property
+    def _type(self) -> str:
+        return "qa_response_parser"

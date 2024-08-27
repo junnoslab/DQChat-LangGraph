@@ -2,11 +2,12 @@ from enum import Enum
 
 from langchain_core.runnables.base import RunnableLike
 
-from ..data import load_questions, prepare_retriever, save
+from ..data import load_questions, prepare_retriever
 from ..features.dataset_builder import (
     prepare_invoker as prepare_dataset_builder_invoker,
     invoke as invoke_dataset_builder,
     validate as validate_dataset_builder,
+    save as save_dataset_builder,
 )
 from ..llm import (
     load_model,
@@ -113,7 +114,7 @@ class Nodes(Enum):
         elif self is Nodes.RF_ANSWER_VALIDATOR:
             return validate_dataset_builder
         elif self is Nodes.RF_QA_DATASET_CHECKPOINTER:
-            return save
+            return save_dataset_builder
 
         # Question Answering
         elif self is Nodes.INFERENCE_PREPARER:
