@@ -31,7 +31,10 @@ class BaseFeature(Generic[_YieldType], metaclass=ABCMeta):
         The actual processing occurs during iteration, which means this method is 'lazy'.
         This also means that the model's responses are generated on-demand as the returned iterator is consumed.
 
-        :return: `Iterator` which yields individual responses from the model. The underlying
+        The `invoker` can be anything even if it is not a LLM inference.
+        For example, it can be a retriever, a pipeline, or just a single method like `concat`.
+
+        :return: `Iterator` which yields individual responses from given callable. The underlying
                   process runs only when this iterator is being iterated over.
         """
         pass

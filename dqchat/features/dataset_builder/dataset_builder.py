@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from typing import Any, TypedDict
 
-from datasets import IterableDataset
+from datasets import Dataset
 from langchain_core.prompts import PromptTemplate
 from langchain_core.prompt_values import ChatPromptValue
 from langchain_core.retrievers import BaseRetriever

@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from typing import Optional, Union
 
-from datasets import Dataset, IterableDataset
+from datasets import Dataset
 from langchain.pydantic_v1 import BaseModel, Field, validator
 from langchain_core.retrievers import BaseRetriever
 from transformers import PreTrainedModel
@@ -16,7 +16,7 @@ class DatasetGeneratorState(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    questions: Optional[IterableDataset] = Field(default=None)
+    questions: Optional[Dataset] = Field(default=None)
     response_invoker: Optional[Iterator] = Field(default=None)
     responses: Optional[Dataset] = Field(default=None)
 
