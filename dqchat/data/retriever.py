@@ -1,10 +1,14 @@
+from typing import List
+
 from chromadb import Collection, PersistentClient, QueryResult
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 from sentence_transformers import SentenceTransformer
+import numpy as np
+import torch
 
-from ..core.state import State
+from ..core.dataclass.state import State
 
 
 class Store:
@@ -24,9 +28,17 @@ class Store:
         collection = chroma.get_collection(name=collection_name)
         self.collection = collection
 
-    def query(self, query: str, top_k: int = 4) -> QueryResult:
+    def query(self, query: str, top_k: int = 10) -> QueryResult:
         # Update query to get batch
-        query_embedding = self.embedding_model.encode(query).tolist()
+        encoded_query = self.embedding_model.encode(query)
+
+        if isinstance(encoded_query, List):
+            query_embedding = encoded_query
+        elif isinstance(encoded_query, torch.Tensor):
+            query_embedding = encoded_query.tolist()
+        elif isinstance(encoded_query, np.ndarray):
+            query_embedding = encoded_query.tolist()
+
         results = self.collection.query(
             query_embeddings=query_embedding, n_results=top_k
         )
@@ -81,6 +93,6 @@ def prepare_retriever(state: State, config: dict) -> State:
     )
     retriever = Retriever(vector_store=store)
 
-    state["retriever"] = retriever
+    state.retriever = retriever
 
     return state

@@ -1,5 +1,5 @@
 from .runmode import RunMode
-from ..core.state import State
+from ..core.dataclass.state import State
 
 
 def check_runmode(state: State, config: dict) -> RunMode:

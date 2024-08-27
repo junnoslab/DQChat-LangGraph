@@ -1,11 +1,27 @@
+from argparse import ArgumentParser, Namespace
 from PIL import Image
 import io
 
+from .core import default_config
 from .core.graph import GraphBuilder
-from .core.state import Config
+from .utils.runmode import RunMode
+
+
+def parse_args() -> Namespace:
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--mode", dest="mode", type=str, choices=RunMode.__args__, required=False
+    )
+    parser.add_argument("--cache-dir", dest="cache_dir", type=str, required=False)
+
+    args = parser.parse_args()
+
+    return args
 
 
 def main():
+    args = parse_args()
+
     graph_builder = GraphBuilder()
     graph = graph_builder.build()
 
@@ -14,12 +30,14 @@ def main():
     image.save("graph.png")
 
     graph.invoke(
-        {
-            "questions": None,
-            "retriever": None,
-            "responses": [],
+        input={
+            "question_answer": {"question": ""},
+            "dataset_generator": {},
         },
-        config=Config.default_config(),
+        config=default_config(
+            run_mode=args.mode,
+            model_cache_path=args.cache_dir,
+        ),
     )
 
 

@@ -1,6 +1,6 @@
 from typing import Literal
 
-from ..core.state import State
+from ..core import State
 
 
 def validate(state: State) -> Literal["valid", "invalid"]:
@@ -15,8 +15,3 @@ def validate(state: State) -> Literal["valid", "invalid"]:
     else:
         print("Invalid")
         return "invalid"
-
-
-def test(state: State) -> State:
-    print(state.get("messages", []))
-    return state

@@ -4,4 +4,4 @@ from .inference import (
     retrieve_input as retrieve_input,
     validate_input as validate_input,
 )
-from .pipeline_builder import generate_raft_dataset as generate_raft_dataset
+from .loader import load_model as load_model
