@@ -2,7 +2,7 @@ from collections.abc import Iterator
 from typing import Optional, Union
 
 from datasets import Dataset, IterableDataset
-from langchain.pydantic_v1 import BaseModel, Field
+from langchain.pydantic_v1 import BaseModel, Field, validator
 from langchain_core.retrievers import BaseRetriever
 from transformers import PreTrainedModel
 from transformers.pipelines import Pipeline
@@ -19,22 +19,27 @@ class DatasetGeneratorState(BaseModel):
     questions: Optional[IterableDataset] = Field(default=None)
     response_invoker: Optional[Iterator] = Field(default=None)
     responses: Optional[Dataset] = Field(default=None)
-    _next_id: int = Field(default=1)
+
+    ds_id: int = Field(default=1)
 
     @property
-    def next_id(self) -> str:
-        return f"qa{self._next_id:03d}"
+    def dataset_id(self) -> str:
+        return f"ds{self.ds_id:03d}"
 
-    @next_id.setter
-    def next_id(self, value: Union[int, str]):
-        prefix = "qa"
+    qa_id: int = Field(default=1)
 
-        if isinstance(value, int):
-            self._next_id = value
-        elif isinstance(value, str) and value[len(prefix) :].isdigit():
-            self._next_id = int(value[len(prefix) :])
+    @property
+    def id(self) -> str:
+        return f"qa{self.qa_id:03d}"
+
+    @validator("ds_id", "qa_id", pre=True)
+    def id_alphanumeric(cls, v: Union[int, str]) -> int:
+        if isinstance(v, int):
+            return v
+        elif isinstance(v, str) and v[2:].isdigit():
+            return int(v[2:])
         else:
-            raise ValueError(f"Invalid id format: {value}")
+            raise ValueError(f"Invalid id format:{v}")
 
 
 class State(BaseModel):
