@@ -59,7 +59,18 @@ class QAResponse(BaseModel):
     """
 
 
-class QAResponseParser(BaseOutputParser[Optional[QAResponse]]):
+class ParserError(Exception):
+    def JSONNotFound(self, message: Optional[str] = None) -> "ParserError":
+        return ParserError(
+            "JSON format not found" + (": " + message) if message else ""
+        )
+
+    @staticmethod
+    def JSONDecodeError(message: Optional[str] = None) -> "ParserError":
+        return ParserError("JSON decode error" + (": " + message) if message else "")
+
+
+class QAResponseParser(BaseOutputParser[QAResponse]):
     state: State
     config: dict
 
@@ -67,20 +78,20 @@ class QAResponseParser(BaseOutputParser[Optional[QAResponse]]):
     def __split_sections(text: str) -> list[str]:
         return re.split(r"\n{2,}", text)
 
-    def parse(self, text: str) -> Optional[QAResponse]:
+    def parse(self, text: str) -> QAResponse:
         splitted_answer = QAResponseParser.__split_sections(text)
         json_match = re.search(r"\{.*\}", splitted_answer[-1], re.DOTALL)
 
         if not json_match:
-            print("Skipping due to json parsing failure.")
-            return None
+            raise ParserError.JSONNotFound()
 
         json_string = json_match.group()
         try:
             parsed_dict = orjson.loads(json_string)
         except orjson.JSONDecodeError:
-            print("Skipping due to json parsing failure.")
-            return None
+            raise ParserError.JSONDecodeError(
+                "Skipping current item due to json parsing failure."
+            )
 
         safe_dict = guard_type(parsed_dict, dict)
         safe_dict["dataset_id"] = self.state.dataset_generator.dataset_id
