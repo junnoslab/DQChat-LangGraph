@@ -3,7 +3,7 @@
 [![Pixi Badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json)](https://pixi.sh)
 
 > [!NOTE]
-> We are making huge refactoring to package structure. Please refer to branch [`refactoring`](https://github.com/junnoslab/DQChat-langGraph/tree/refactoring) for progress.
+> We are making huge refactoring to package structure. Please refer to [GitHub Issues](https://github.com/junnoslab/DQChat-langGraph/issues) for progress.
 
 ## Flow Chart
 
