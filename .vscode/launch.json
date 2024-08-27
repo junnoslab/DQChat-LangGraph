@@ -5,11 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Current File",
+            "name": "Current File",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "DQChat (Trainer)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "dqchat",
+            "args": [
+                "--mode",
+                "train",
+                "--dataset-config",
+                "question-answer",
+                "--cache-dir",
+                "/home/work/.nlp-data/.cache"
+            ],
+            "justMyCode": false,
         },
         {
             "name": "DQChat (RAFT Dataset Builder)",
