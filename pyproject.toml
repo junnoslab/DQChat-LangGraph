@@ -15,7 +15,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["dqchat", "trainer"]
+py-modules = ["dqchat"]
 
 [tool.pixi.project]
 channels = ["pytorch", "nvidia", "conda-forge"]
