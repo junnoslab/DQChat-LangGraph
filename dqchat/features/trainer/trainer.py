@@ -64,9 +64,9 @@ def train(state: State, config: dict) -> State:
         # optim="paged_adamw_8bit",
         dataloader_num_workers=8,
         save_strategy="steps",
-        save_steps=200,
+        save_steps=500,
         logging_strategy="steps",
-        logging_steps=10,
+        logging_steps=50,
         report_to="none",
     )
 
