@@ -83,7 +83,6 @@ class DatasetBuilder(BaseFeature[QAResponse]):
                 add_generation_prompt=True,
             )
             str_prompt = guard_type(prompt, str)
-
             yield str_prompt
 
     def build_invoker(self) -> Iterator[QAResponse]:
@@ -111,14 +110,19 @@ class DatasetBuilder(BaseFeature[QAResponse]):
                 text = guard_type(generated_text, str)
 
                 parser = QAResponseParser(state=self.state, config=self.config)
-                response = parser.parse(text)
+                try:
+                    response = parser.parse(text)
+                except ParserError as e:
+                    _LOGGER.warning(e)
+                    continue
                 # Increase qa_id after parsing
                 self.state.dataset_generator.qa_id += 1
 
                 try:
                     safe_response = guard_type(response, QAResponse)
+                    _LOGGER.info(f"Generated response: {safe_response}")
                     yield safe_response
-                except ParserError as e:
+                except TypeError as e:
                     _LOGGER.warning(e)
                     continue
 
