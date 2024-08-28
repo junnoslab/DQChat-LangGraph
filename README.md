@@ -69,3 +69,11 @@ pixi r tc
 ```shell
 pixi r r
 ```
+
+## Powered by
+
+[🤗 LLM - MLP-KTLim/llama-3-Korean-Bllossom-8B](https://huggingface.co/MLP-KTLim/llama-3-Korean-Bllossom-8B)
+
+[🤗 Embedding Model - jhgan/ko-sroberta-multitask](https://huggingface.co/jhgan/ko-sroberta-multitask)
+
+[\[🔒 Private\] 🤗 Dataset - Junnos/DQChat-raft](https://huggingface.co/datasets/Junnos/DQChat-raft)
