@@ -28,7 +28,8 @@ brew install pixi
 
 > [!Warning]
 > Following commands are set up for my personal use. (which means they usually requires personal access tokens inside `utils/secret.py` file.\
-> Passing arguments using pixi commands will be added in the future.\
+> Passing arguments using pixi commands will be added in the future.
+> 
 > Otherwise, you can just simply use `python -m dqchat [options]` command format while the pixi subshell is activated. You can check available subcommands with `python -m dqchat --help`.
 
 #### (Optional) Activate pixi subshell
