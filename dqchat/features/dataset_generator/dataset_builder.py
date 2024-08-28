@@ -5,8 +5,7 @@ from datasets import Dataset
 from langchain_core.prompts import PromptTemplate
 from langchain_core.prompt_values import StringPromptValue
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import Runnable, RunnablePassthrough
-from transformers import PreTrainedTokenizer
+from transformers import PreTrainedTokenizerBase
 from transformers.pipelines import Pipeline
 import tqdm
 
@@ -54,13 +53,13 @@ def invoke(state: State, config: dict) -> State:
 class DatasetBuilder(BaseFeature[QAResponse]):
     retriever: BaseRetriever
     pipe: Pipeline
-    tokenizer: PreTrainedTokenizer
+    tokenizer: PreTrainedTokenizerBase
 
     def __init__(self, state: State, config: dict):
         super().__init__(state, config)
         self.retriever = guard_type(state.retriever, BaseRetriever)
         self.pipe = guard_type(state.llm, Pipeline)
-        self.tokenizer = guard_type(self.pipe.tokenizer, PreTrainedTokenizer)
+        self.tokenizer = guard_type(self.pipe.tokenizer, PreTrainedTokenizerBase)
 
     def __prompt_iterator(self, dataset: Dataset) -> Iterator[str]:
         for question_dict in dataset:
