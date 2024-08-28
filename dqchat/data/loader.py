@@ -1,3 +1,5 @@
+import os
+
 from datasets import Dataset, DownloadMode, load_dataset
 
 from ..core import State
@@ -25,6 +27,8 @@ def load_questions(state: State, config: dict) -> State:
 
 
 def load_raft_dataset(state: State, config: dict) -> State:
+    os.environ["TOKENIZERS_PARALLELISM"] = "true"
+
     config = config["configurable"]
     dataset = load_dataset(
         path=config["dataset_name"],
