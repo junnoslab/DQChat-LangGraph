@@ -60,7 +60,8 @@ class QAResponse(BaseModel):
 
 
 class ParserError(Exception):
-    def JSONNotFound(self, message: Optional[str] = None) -> "ParserError":
+    @staticmethod
+    def JSONNotFound(message: Optional[str] = None) -> "ParserError":
         return ParserError(
             "JSON format not found" + (": " + message) if message else ""
         )
@@ -83,7 +84,7 @@ class QAResponseParser(BaseOutputParser[QAResponse]):
         json_match = re.search(r"\{.*\}", splitted_answer[-1], re.DOTALL)
 
         if not json_match:
-            raise ParserError.JSONNotFound()
+            raise ParserError.JSONNotFound(text)
 
         json_string = json_match.group()
         try:

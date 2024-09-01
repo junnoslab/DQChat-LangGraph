@@ -2,17 +2,14 @@ from collections.abc import Iterator
 import logging
 
 from datasets import Dataset
-from langchain_core.prompts import PromptTemplate
-from langchain_core.prompt_values import StringPromptValue
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import Runnable, RunnablePassthrough
-from transformers import PreTrainedTokenizer
+from transformers import PreTrainedTokenizerBase
 from transformers.pipelines import Pipeline
 import tqdm
 
-from . import PROMPT_TEMPLATE
 from .output_parser import ParserError, QAResponse, QAResponseParser
 from .retriever_parser import RetrieverParser
+from ..const import SYSTEM_PROMPT_TEMPLATE, USER_PROMPT_TEMPLATE
 from ..feature import BaseFeature
 from ...core import State
 from ...utils.type_helper import guard_type
@@ -54,25 +51,39 @@ def invoke(state: State, config: dict) -> State:
 class DatasetBuilder(BaseFeature[QAResponse]):
     retriever: BaseRetriever
     pipe: Pipeline
-    tokenizer: PreTrainedTokenizer
+    tokenizer: PreTrainedTokenizerBase
 
     def __init__(self, state: State, config: dict):
         super().__init__(state, config)
         self.retriever = guard_type(state.retriever, BaseRetriever)
         self.pipe = guard_type(state.llm, Pipeline)
-        self.tokenizer = guard_type(self.pipe.tokenizer, PreTrainedTokenizer)
+        self.tokenizer = guard_type(self.pipe.tokenizer, PreTrainedTokenizerBase)
 
     def __prompt_iterator(self, dataset: Dataset) -> Iterator[str]:
         for question_dict in dataset:
             question = question_dict["question"]
 
-            prompt_builder: Runnable = {
-                "context": self.retriever | RetrieverParser.docs_to_context,
-                "question": RunnablePassthrough(),
-            } | PromptTemplate.from_template(PROMPT_TEMPLATE)
-            prompt_template = prompt_builder.invoke(input=question)
-            prompt = guard_type(prompt_template, StringPromptValue)
-            yield prompt.to_string()
+            context_retriever = self.retriever | RetrieverParser.docs_to_context
+            context = context_retriever.invoke(input=question)
+
+            messages = [
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT_TEMPLATE.format(context=context),
+                },
+                {
+                    "role": "user",
+                    "content": USER_PROMPT_TEMPLATE.format(question=question),
+                },
+            ]
+
+            prompt = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            str_prompt = guard_type(prompt, str)
+            yield str_prompt
 
     def build_invoker(self) -> Iterator[QAResponse]:
         questions = guard_type(self.state.dataset_generator.questions, Dataset)
@@ -99,14 +110,19 @@ class DatasetBuilder(BaseFeature[QAResponse]):
                 text = guard_type(generated_text, str)
 
                 parser = QAResponseParser(state=self.state, config=self.config)
-                response = parser.parse(text)
+                try:
+                    response = parser.parse(text)
+                except ParserError as e:
+                    _LOGGER.warning(e)
+                    continue
                 # Increase qa_id after parsing
                 self.state.dataset_generator.qa_id += 1
 
                 try:
                     safe_response = guard_type(response, QAResponse)
+                    _LOGGER.info(f"Generated response: {safe_response}")
                     yield safe_response
-                except ParserError as e:
+                except TypeError as e:
                     _LOGGER.warning(e)
                     continue
 

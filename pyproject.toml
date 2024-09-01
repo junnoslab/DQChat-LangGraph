@@ -15,7 +15,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["dqchat", "trainer"]
+py-modules = ["dqchat"]
 
 [tool.pixi.project]
 channels = ["pytorch", "nvidia", "conda-forge"]
@@ -28,14 +28,14 @@ DQChat-langGraph = { path = ".", editable = true }
 linux = "5.15.0"
 
 [tool.pixi.tasks]
-run = "python -m dqchat"
-r = { depends-on = ["run"] }
 generate_raft_dataset = "python -m dqchat --mode raft_dataset"
 generate_raft_dataset_using_cache = "python -m dqchat --mode raft_dataset --cache-dir '/home/work/.nlp-data/.cache'"
 gd = { depends-on = ["generate_raft_dataset"] }
 gdc = { depends-on = ["generate_raft_dataset_using_cache"] }
-trainer = "python -m trainer"
-t = { depends-on = ["trainer"] }
+train = "python -m dqchat --mode train"
+t = { depends-on = ["train"] }
+train_using_cache = "python -m dqchat --mode train --dataset-config question-answer --cache-dir '/home/work/.nlp-data/.cache'"
+tc = { depends-on = ["train_using_cache"] }
 
 [tool.pixi.dependencies]
 pre-commit = ">=3.7.1,<4"

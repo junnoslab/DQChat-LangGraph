@@ -10,7 +10,9 @@ def save(state: State, config: dict) -> State:
     responses = state.dataset_generator.responses
     responses_dataset = guard_type(responses, Dataset)
 
-    output_dir = os.path.join("output", "dataset_builder")
+    output_dir = os.path.join(
+        "output", "dataset_builder", config["configurable"].get("model_name", "")
+    )
 
     responses_dataset.to_json(
         os.path.join(output_dir, "responses.jsonl"), force_ascii=False, indent=4
