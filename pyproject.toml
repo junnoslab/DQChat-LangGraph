@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
 requires-python = ">= 3.11, < 3.12"
-dependencies = ["deepeval>=0.10.7,<0.11"]
+dependencies = []
 
 [project.optional-dependencies]
 default = []
@@ -53,6 +53,8 @@ chromadb = ">=0.5.5,<0.6"
 orjson = ">=3.10.7,<4"
 tqdm = ">=4.66.5,<5"
 pillow = ">=9.4.0,<10"
+ragas = ">=0.1.15,<0.2"
+langchain-huggingface = ">=0.0.3,<0.0.4"
 
 [tool.pixi.target.linux-64.dependencies]
 pytorch-cuda = "12.1.*"
@@ -62,8 +64,7 @@ bitsandbytes = ">=0.43.3,<0.44"
 pytest = ">=8.3.2,<9"
 
 [tool.pixi.feature.test.tasks]
-test = "pytest"
-test_state = "python tests/test_state.py"
+test = "python -m pytest"
 
 [tool.pixi.environments]
 default = ["default"]
@@ -72,6 +73,12 @@ test = ["default", "test"]
 [tool.pyright]
 venvPath = "."
 venv = ".pixi/envs/default"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -v -s"
+log_cli = true
+log_cli_level = "INFO"
 
 [tool.bumpversion]
 current_version = "0.1.0"
@@ -120,7 +127,6 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "inference.py" # Temporary, remove later.
 ]
 
 # Same as Black.

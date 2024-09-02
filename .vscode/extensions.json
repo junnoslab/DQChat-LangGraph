@@ -2,7 +2,6 @@
     "recommendations": [
         "ms-python.mypy-type-checker",
         "tamasfe.even-better-toml",
-        "github.copilot",
         "eamodio.gitlens",
         "ms-python.debugpy",
         "ms-python.python",
