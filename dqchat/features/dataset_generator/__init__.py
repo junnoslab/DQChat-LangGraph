@@ -9,4 +9,4 @@ from .dataset_builder import (
     prepare_invoker as prepare_invoker,
     invoke as invoke,
 )
-from .validator import validate as validate
+from .validator import validate_dataset as validate_dataset

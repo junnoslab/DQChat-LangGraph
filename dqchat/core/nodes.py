@@ -6,7 +6,7 @@ from ..data import load_questions, prepare_retriever, load_raft_dataset
 from ..features.dataset_generator import (
     prepare_invoker as prepare_dataset_builder_invoker,
     invoke as invoke_dataset_builder,
-    validate as validate_dataset_builder,
+    validate_dataset as validate_dataset_builder,
     save as save_dataset_builder,
 )
 from ..features.trainer import prepare_train, train

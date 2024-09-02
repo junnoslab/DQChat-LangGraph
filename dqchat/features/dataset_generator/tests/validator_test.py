@@ -1,27 +1,40 @@
-from datasets import Dataset, load_dataset, DownloadMode
+from datasets import Dataset, load_dataset
 import pytest
 
+from ....core import State, default_config
+from ....core.dataclass.state import DatasetGeneratorState
+from ....llm.loader import load_pipeline
 from ....utils.type_helper import guard_type
 from ....utils.secret import HF_ACCESS_TOKEN
-from ..validator import validate
+from ..validator import validate_dataset
 
 
 class TestDataset:
     @pytest.fixture(scope="class")
-    def dataset(self) -> Dataset:
+    def state(self) -> State:
         ds = load_dataset(
             path="Junnos/DQChat-raft",
             name="question-answer",
             split="train",
-            download_mode=DownloadMode.FORCE_REDOWNLOAD,
             token=HF_ACCESS_TOKEN,
         )
         dataset = guard_type(ds, Dataset)
-        return dataset
+        return State(
+            dataset_generator=DatasetGeneratorState(
+                responses=dataset,
+            )
+        )
 
-    def test_dataset_is_loaded(self, dataset: Dataset):
-        assert dataset.num_rows > 0
+    @pytest.fixture(scope="class")
+    def config(self) -> dict:
+        return {
+            "configurable": default_config(),
+        }
 
-    def test_dataset_is_valid(self, dataset: Dataset):
-        validation_result = validate(dataset, config={})
+    def test_dataset_is_loaded(self, state: State, config: dict):
+        assert state.dataset_generator.responses.num_rows > 0
+
+    def test_dataset_is_valid(self, state: State, config: dict):
+        state.llm = load_pipeline(state=state, config=config)
+        validation_result = validate_dataset(state, config=config)
         assert validation_result == "pass"
