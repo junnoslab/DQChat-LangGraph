@@ -59,6 +59,7 @@ pytorch-cuda = "12.1.*"
 bitsandbytes = ">=0.43.3,<0.44"
 
 [tool.pixi.feature.test.dependencies]
+pytest = ">=8.3.2,<9"
 
 [tool.pixi.feature.test.tasks]
 test = "pytest"
