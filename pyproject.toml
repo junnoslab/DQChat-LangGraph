@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
 requires-python = ">= 3.11, < 3.12"
-dependencies = []
+dependencies = ["deepeval>=0.10.7,<0.11"]
 
 [project.optional-dependencies]
 default = []
@@ -19,7 +19,7 @@ py-modules = ["dqchat"]
 
 [tool.pixi.project]
 channels = ["pytorch", "nvidia", "conda-forge"]
-platforms = ["linux-64"]
+platforms = ["linux-64", "osx-arm64"]
 
 [tool.pixi.pypi-dependencies]
 DQChat-langGraph = { path = ".", editable = true }
@@ -49,7 +49,6 @@ peft = ">=0.12.0,<0.13"
 trl = ">=0.9.6,<0.10"
 sentence-transformers = ">=3.0.1,<4"
 accelerate = ">=0.33.0,<0.34"
-bitsandbytes = ">=0.43.3,<0.44"
 chromadb = ">=0.5.5,<0.6"
 orjson = ">=3.10.7,<4"
 tqdm = ">=4.66.5,<5"
@@ -57,6 +56,7 @@ pillow = ">=9.4.0,<10"
 
 [tool.pixi.target.linux-64.dependencies]
 pytorch-cuda = "12.1.*"
+bitsandbytes = ">=0.43.3,<0.44"
 
 [tool.pixi.feature.test.dependencies]
 
