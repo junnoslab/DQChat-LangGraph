@@ -35,6 +35,6 @@ class TestDataset:
         assert state.dataset_generator.responses.num_rows > 0
 
     def test_dataset_is_valid(self, state: State, config: dict):
-        state.llm = load_pipeline(state=state, config=config)
-        validation_result = validate_dataset(state, config=config)
-        assert validation_result == "pass"
+        load_pipeline(state=state, config=config)
+        validation_result = validate_dataset(state=state, config=config)
+        assert validation_result == "valid"

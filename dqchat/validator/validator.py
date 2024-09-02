@@ -42,7 +42,7 @@ def validate(state: State, config: dict) -> Literal["valid", "invalid"]:
     score = evaluate(
         dataset=dataset,
         metrics=[metrics.faithfulness],
-        llm=HuggingFacePipeline(pipe),
+        llm=HuggingFacePipeline(pipeline=pipe),
         embeddings=HuggingFaceEmbeddings(model_name=embedding_model_name),
     )
     df: pd.DataFrame = score.to_pandas()
