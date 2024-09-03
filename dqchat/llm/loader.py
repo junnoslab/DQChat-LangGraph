@@ -35,7 +35,8 @@ def load_embedding_model(state: State, config: dict) -> State:
     embedding_model_name = config["configurable"]
 
     embedding_model = SentenceTransformer(
-        embedding_model_name.get("embedding_model_name", "")
+        embedding_model_name.get("embedding_model_name", ""),
+        cache_folder=config.get("model_cache_path", None),
     )
     state.embedding_model = embedding_model
 

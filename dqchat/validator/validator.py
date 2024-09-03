@@ -1,9 +1,11 @@
 from typing import Literal
 import logging
+import re
 
 from datasets import Dataset
-from langchain_huggingface import HuggingFaceEmbeddings, HuggingFacePipeline
-from ragas import metrics, evaluate
+from langchain_huggingface import HuggingFacePipeline
+from ragas import RunConfig, metrics, evaluate
+from sentence_transformers import SentenceTransformer
 from transformers.pipelines import Pipeline
 import pandas as pd
 
@@ -22,28 +24,37 @@ def validate(state: State, config: dict) -> Literal["valid", "invalid"]:
     """
     try:
         dataset = guard_type(state.dataset_generator.responses, Dataset)
-    except TypeError as e:
-        _LOGGER.error(f"Failed to validate state: {e}")
-        return "invalid"
-
-    try:
         pipe = guard_type(state.llm, Pipeline)
+        embedding_model = guard_type(state.embedding_model, SentenceTransformer)
     except TypeError as e:
         _LOGGER.error(f"Failed to validate state: {e}")
         return "invalid"
 
     # Split content of `context` by separator " " to list of strings.
-    dataset = dataset.map(lambda x: {"contexts": x["context"].split(" ")})
-
-    embedding_model_name = guard_type(
-        config["configurable"]["embedding_model_name"], str
+    dataset = dataset.map(
+        lambda x: {"contexts": re.split(r"(?<=[.!?])\s+", x["context"])}
     )
+    dataset.remove_columns(["context"])
+    _LOGGER.info(dataset[0])
 
     score = evaluate(
         dataset=dataset,
-        metrics=[metrics.faithfulness],
-        llm=HuggingFacePipeline(pipeline=pipe),
-        embeddings=HuggingFaceEmbeddings(model_name=embedding_model_name),
+        metrics=[metrics.answer_relevancy],
+        llm=HuggingFacePipeline(
+            pipeline=pipe,
+            pipeline_kwargs={
+                "max_new_tokens": 1024 * 8,
+                "eos_token_id": pipe.tokenizer.eos_token_id,
+                "do_sample": True,
+                "temperature": 0.6,
+                "top_p": 0.9,
+            },
+            batch_size=16,
+        ),
+        embeddings=embedding_model,
+        run_config=RunConfig(
+            timeout=999_999_999,
+        ),
     )
     df: pd.DataFrame = score.to_pandas()
     _LOGGER.info(df.head(20))
