@@ -1,4 +1,5 @@
 from transformers import pipeline
+from sentence_transformers import SentenceTransformer
 import torch
 
 from ..core import State
@@ -13,7 +14,7 @@ def load_model(state: State, config: dict) -> State:
     return state
 
 
-def load_pipeline(state: State, config: dict):
+def load_pipeline(state: State, config: dict) -> State:
     config = config["configurable"]
 
     pipe = pipeline(
@@ -26,3 +27,16 @@ def load_pipeline(state: State, config: dict):
         device_map="auto",
     )
     state.llm = pipe
+
+    return state
+
+
+def load_embedding_model(state: State, config: dict) -> State:
+    embedding_model_name = config["configurable"]
+
+    embedding_model = SentenceTransformer(
+        embedding_model_name.get("embedding_model_name", "")
+    )
+    state.embedding_model = embedding_model
+
+    return state

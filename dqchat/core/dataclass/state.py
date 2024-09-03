@@ -6,6 +6,7 @@ from langchain.pydantic_v1 import BaseModel, Field, validator
 from langchain_core.retrievers import BaseRetriever
 from transformers import PreTrainedModel
 from transformers.pipelines import Pipeline
+from sentence_transformers import SentenceTransformer
 
 
 class QAState(BaseModel):
@@ -56,6 +57,8 @@ class State(BaseModel):
 
     llm: Optional[PreTrainedModel | Pipeline] = Field(default=None)
     """LLM model for generating responses"""
+    embedding_model: Optional[SentenceTransformer] = Field(default=None)
+    """Embedding model for encoding documents"""
     retriever: Optional[BaseRetriever] = Field(default=None)
     """Retriever for finding relevant documents"""
     # sampling_params: Optional[SamplingParams] = Field(default=None)
