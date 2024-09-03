@@ -16,7 +16,11 @@ class GraphBuilder:
             self.graph.add_node(*node.node_action_binding)
 
         # Add edges to the graph
-        self.graph.add_edge(start_key=START, end_key=Nodes.RETRIEVER_PREPARER.key)
+        self.graph.add_edge(start_key=START, end_key=Nodes.EMBEDDING_MODEL_LOADER.key)
+        self.graph.add_edge(
+            start_key=Nodes.EMBEDDING_MODEL_LOADER.key,
+            end_key=Nodes.RETRIEVER_PREPARER.key,
+        )
         # https://langchain-ai.github.io/langgraph/concepts/low_level/#conditional-edges
         self.graph.add_conditional_edges(
             source=Nodes.RETRIEVER_PREPARER.key,

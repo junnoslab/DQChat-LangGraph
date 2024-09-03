@@ -12,6 +12,7 @@ from ..features.dataset_generator import (
 from ..features.trainer import prepare_train, train
 from ..llm import (
     load_model,
+    load_embedding_model,
     prepare_for_inference,
     inference,
     retrieve_input,
@@ -31,6 +32,8 @@ class Nodes(Enum):
     - `rt` for retriever nodes
     """
 
+    EMBEDDING_MODEL_LOADER = "lm_loader_embedding_model"
+    """Embedding model loader node"""
     RETRIEVER_PREPARER = "rt_preparer_retriever"
     """VectorDB retriever preparation node"""
     RUNMODE_CHECKER = "c_check_runmode"
@@ -108,7 +111,9 @@ class Nodes(Enum):
         Get the runnable for the node.\n
         :return: Runnable for the node
         """
-        if self is Nodes.RETRIEVER_PREPARER:
+        if self is Nodes.EMBEDDING_MODEL_LOADER:
+            return load_embedding_model
+        elif self is Nodes.RETRIEVER_PREPARER:
             return prepare_retriever
         elif self is Nodes.RUNMODE_CHECKER:
             return check_runmode

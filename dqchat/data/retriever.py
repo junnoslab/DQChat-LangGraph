@@ -9,6 +9,7 @@ import numpy as np
 import torch
 
 from ..core.dataclass.state import State
+from ..utils.type_helper import guard_type
 
 
 class Store:
@@ -17,11 +18,10 @@ class Store:
 
     def __init__(
         self,
-        embedding_model_name: str,
+        embedding_model: SentenceTransformer,
         db_path: str = "db",
         collection_name: str = "dqchat",
     ):
-        embedding_model = SentenceTransformer(embedding_model_name)
         self.embedding_model = embedding_model
 
         chroma = PersistentClient(path=db_path)
@@ -86,8 +86,11 @@ def prepare_retriever(state: State, config: dict) -> State:
     :return: State
     """
     config = config["configurable"]
+
+    embedding_model = guard_type(state.embedding_model, SentenceTransformer)
+
     store = Store(
-        embedding_model_name=config["embedding_model_name"],
+        embedding_model=embedding_model,
         db_path=config["vector_db_path"],
         collection_name=config["vector_db_collection_name"],
     )
