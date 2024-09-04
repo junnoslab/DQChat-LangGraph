@@ -4,7 +4,7 @@ import re
 
 from datasets import Dataset
 from langchain_huggingface import HuggingFacePipeline
-from ragas import RunConfig, metrics, evaluate
+from ragas import RunConfig, metrics, adapt, evaluate
 from sentence_transformers import SentenceTransformer
 from transformers.pipelines import Pipeline
 import pandas as pd
@@ -34,23 +34,34 @@ def validate(state: State, config: dict) -> Literal["valid", "invalid"]:
     dataset = dataset.map(
         lambda x: {"contexts": re.split(r"(?<=[.!?])\s+", x["context"])}
     )
-    dataset.remove_columns(["context"])
+    dataset = dataset.remove_columns(["context"])
     _LOGGER.info(dataset[0])
+
+    pipe = HuggingFacePipeline(
+        pipeline=pipe,
+        pipeline_kwargs={
+            "max_new_tokens": 1024 * 4,
+            "eos_token_id": pipe.tokenizer.eos_token_id,
+            "do_sample": True,
+            "temperature": 0.6,
+            "top_p": 0.9,
+        },
+        model_kwargs={
+            "max_length": 1024 * 8,
+        },
+        batch_size=16,
+    )
+
+    adapt(
+        metrics=[metrics.faithfulness, metrics.answer_relevancy],
+        language="ko",
+        llm=pipe,
+    )
 
     score = evaluate(
         dataset=dataset,
-        metrics=[metrics.answer_relevancy],
-        llm=HuggingFacePipeline(
-            pipeline=pipe,
-            pipeline_kwargs={
-                "max_new_tokens": 1024 * 8,
-                "eos_token_id": pipe.tokenizer.eos_token_id,
-                "do_sample": True,
-                "temperature": 0.6,
-                "top_p": 0.9,
-            },
-            batch_size=16,
-        ),
+        metrics=[metrics.faithfulness, metrics.answer_relevancy],
+        llm=pipe,
         embeddings=embedding_model,
         run_config=RunConfig(
             timeout=999_999_999,
@@ -58,4 +69,5 @@ def validate(state: State, config: dict) -> Literal["valid", "invalid"]:
     )
     df: pd.DataFrame = score.to_pandas()
     _LOGGER.info(df.head(20))
+
     return "valid"

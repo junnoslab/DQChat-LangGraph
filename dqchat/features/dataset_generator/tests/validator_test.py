@@ -36,9 +36,9 @@ class TestDataset:
         assert state.dataset_generator.responses.num_rows > 0
 
     def test_dataset_is_valid(self, state: State, config: dict):
-        # os.environ["CUDA_LAUNCH_BLOCKING"]  = "1"
-        # os.environ["TORCH_USE_CUDA_DSA"] = "1"
-        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+        os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+        os.environ["TORCH_USE_CUDA_DSA"] = "1"
+        # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
         load_pipeline(state=state, config=config)
         load_embedding_model(state=state, config=config)

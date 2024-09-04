@@ -1,12 +1,16 @@
 from abc import abstractmethod
 
 from datasets import Dataset
+from transformers import PreTrainedModel
 
-from ..test_case import LLMTestCase
+from .test_case import LLMTestCase
 
 
 class BaseMetric:
     threshold: float
+
+    def __init__(self, threshold: float):
+        self.threshold = threshold
 
     @abstractmethod
     def measure(self, test_case: LLMTestCase) -> float:
@@ -18,7 +22,8 @@ class BaseMetric:
         """
         raise NotImplementedError
 
-    def evaluate(self, dataset: Dataset) -> Dataset:
+    @abstractmethod
+    def evaluate(self, dataset: Dataset, llm: PreTrainedModel) -> Dataset:
         """
         Evaluate the metric for the given dataset.
 
