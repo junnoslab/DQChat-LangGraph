@@ -1,6 +1,6 @@
 class FaithfulnessTemplate:
     @staticmethod
-    def generate_claims(text):
+    def generate_claims(text: str) -> str:
         return f"""주어진 텍스트를 바탕으로 추론할 수 있는 사실적인 주장들(FACTUAL claims)의 포괄적인 목록을 생성해 주세요.
 
 예시:
@@ -29,7 +29,7 @@ JSON:
 """
 
     @staticmethod
-    def generate_truths(text):
+    def generate_truths(text: str) -> str:
         return f"""주어진 텍스트를 바탕으로 추론할 수 있는 사실적이고 논란의 여지가 없는 진실들의 포괄적인 목록을 생성해 주세요.
 
 예시:
@@ -57,7 +57,7 @@ JSON:
 """
 
     @staticmethod
-    def generate_verdicts(claims, retrieval_context):
+    def generate_verdicts(claims: str, retrieval_context: str) -> str:
         return f"""주어진 주장들(문자열 목록)을 바탕으로, 각 주장이 검색 컨텍스트의 사실과 모순되는지 여부를 나타내는 JSON 객체 목록을 생성하세요. JSON은 'verdict'와 'reason' 두 개의 필드를 가집니다.
 'verdict' 키는 반드시 'yes', 'no', 또는 'idk' 중 하나여야 하며, 이는 주어진 주장이 컨텍스트와 일치하는지 여부를 나타냅니다.
 'reason'은 답변이 'no'일 경우에만 제공하세요.
@@ -109,7 +109,7 @@ JSON:
 """
 
     @staticmethod
-    def generate_reason(score, contradictions):
+    def generate_reason(score: float, contradictions) -> str:
         return f"""아래는 모순 목록입니다. 이는 '실제 출력'이 '검색 컨텍스트'에 제시된 정보와 일치하지 않는 이유를 설명하는 문자열 목록입니다. 모순은 '실제 출력'에서 발생하며, '검색 컨텍스트'에서 발생하지 않습니다.
 주어진 충실도 점수는 `실제 출력`이 검색 컨텍스트에 얼마나 충실한지를 나타내는 0-1 사이의 점수입니다(높을수록 좋음). 이 점수를 정당화하기 위해 모순을 간결하게 요약해주세요.
 
