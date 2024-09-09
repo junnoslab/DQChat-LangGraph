@@ -2967,7 +2967,7 @@ packages:
   name: dqchat-langgraph
   version: 0.1.0
   path: .
-  sha256: 9d854ff36ce0a42ccaf67c83f429f7193e565f2f54b19d44b9f3a3fd0941e3e3
+  sha256: 3506cef93b20abdbc4287deb028228f883d54bd029fe53124e6070a2cb325dfa
   requires_python: '>=3.11,<3.12'
   editable: true
 - kind: conda
