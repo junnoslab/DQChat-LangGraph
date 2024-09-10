@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Optional
 
 from ...utils.type_helper import guard_let
@@ -19,3 +19,6 @@ class LLMTestCase:
                 raise TypeError(
                     f"'contexts' must be None or a list of strings, but got {type(self.contexts)}"
                 ) from e
+
+    def to_dict(self) -> dict:
+        return asdict(self)
