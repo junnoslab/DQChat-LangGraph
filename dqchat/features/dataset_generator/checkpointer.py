@@ -3,12 +3,12 @@ import os
 from datasets import Dataset
 
 from ...core import State
-from ...utils.type_helper import guard_type
+from ...utils.type_helper import guard_let
 
 
 def save(state: State, config: dict) -> State:
     responses = state.dataset_generator.responses
-    responses_dataset = guard_type(responses, Dataset)
+    responses_dataset = guard_let(responses, Dataset)
 
     output_dir = os.path.join(
         "output", "dataset_builder", config["configurable"].get("model_name", "")

@@ -6,7 +6,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import BaseOutputParser
 
 from ...core import State
-from ...utils.type_helper import guard_type
+from ...utils.type_helper import guard_let
 
 
 class QAResponse(BaseModel):
@@ -94,7 +94,7 @@ class QAResponseParser(BaseOutputParser[QAResponse]):
                 "Skipping current item due to json parsing failure."
             )
 
-        safe_dict = guard_type(parsed_dict, dict)
+        safe_dict = guard_let(parsed_dict, dict)
         safe_dict["dataset_id"] = self.state.dataset_generator.dataset_id
         safe_dict["qa_id"] = self.state.dataset_generator.id
 

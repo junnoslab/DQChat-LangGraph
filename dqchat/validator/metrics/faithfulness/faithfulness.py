@@ -6,7 +6,7 @@ from langchain_core.runnables import RunnableSequence
 from transformers import PreTrainedModel
 from transformers.pipelines import Pipeline
 
-from dqchat.utils.type_helper import guard_type
+from dqchat.utils.type_helper import guard_let
 from dqchat.validator.metrics.output_parsers import JSONKeyPathOutputParser
 from dqchat.validator.metrics import BaseMetric, LLMTestCase
 from dqchat.validator.metrics.faithfulness.template import FaithfulnessTemplate
@@ -115,7 +115,7 @@ class FaithfulnessMetric(BaseMetric):
         )
 
         result = chain.invoke(test_case)
-        score_result = guard_type(result, float)
+        score_result = guard_let(result, float)
         return score_result
 
     def evaluate(

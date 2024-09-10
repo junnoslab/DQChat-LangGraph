@@ -7,7 +7,7 @@ from transformers.pipelines import Pipeline
 from trl import SFTConfig, SFTTrainer
 
 from ...core import State
-from ...utils.type_helper import guard_type
+from ...utils.type_helper import guard_let
 from ..feature import BaseFeature
 from .const import PROMPT_TEMPLATE
 
@@ -29,10 +29,10 @@ def train(state: State, config: dict) -> State:
     if invoker is None:
         raise ValueError("No invoker to run.")
 
-    pipe = guard_type(state.llm, Pipeline)
-    model = guard_type(pipe.model, PreTrainedModel)
-    tokenizer = guard_type(pipe.tokenizer, PreTrainedTokenizerBase)
-    dataset = guard_type(state.trainer.dataset, Dataset)
+    pipe = guard_let(state.llm, Pipeline)
+    model = guard_let(pipe.model, PreTrainedModel)
+    tokenizer = guard_let(pipe.tokenizer, PreTrainedTokenizerBase)
+    dataset = guard_let(state.trainer.dataset, Dataset)
 
     def format_prompt(input_dataset: Dataset) -> list[str]:
         prompts: list[str] = []

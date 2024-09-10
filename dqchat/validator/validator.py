@@ -10,7 +10,7 @@ from transformers.pipelines import Pipeline
 import pandas as pd
 
 from ..core import State
-from ..utils.type_helper import guard_type
+from ..utils.type_helper import guard_let
 
 
 _LOGGER = logging.getLogger(__file__)
@@ -23,9 +23,9 @@ def validate(state: State, config: dict) -> Literal["valid", "invalid"]:
     :return: "valid" if the state is valid, "invalid" otherwise
     """
     try:
-        dataset = guard_type(state.dataset_generator.responses, Dataset)
-        pipe = guard_type(state.llm, Pipeline)
-        embedding_model = guard_type(state.embedding_model, SentenceTransformer)
+        dataset = guard_let(state.dataset_generator.responses, Dataset)
+        pipe = guard_let(state.llm, Pipeline)
+        embedding_model = guard_let(state.embedding_model, SentenceTransformer)
     except TypeError as e:
         _LOGGER.error(f"Failed to validate state: {e}")
         return "invalid"

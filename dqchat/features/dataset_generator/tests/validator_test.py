@@ -5,7 +5,7 @@ import pytest
 from ....core import State, default_config
 from ....core.dataclass.state import DatasetGeneratorState
 from ....llm.loader import load_pipeline, load_embedding_model
-from ....utils.type_helper import guard_type
+from ....utils.type_helper import guard_let
 from ....utils.secret import HF_ACCESS_TOKEN
 from ..validator import validate_dataset
 
@@ -19,7 +19,7 @@ class TestDataset:
             split="train[:1%]",
             token=HF_ACCESS_TOKEN,
         )
-        dataset = guard_type(ds, Dataset)
+        dataset = guard_let(ds, Dataset)
         return State(
             dataset_generator=DatasetGeneratorState(
                 responses=dataset,

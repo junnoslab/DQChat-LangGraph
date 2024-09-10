@@ -9,7 +9,7 @@ import numpy as np
 import torch
 
 from ..core.dataclass.state import State
-from ..utils.type_helper import guard_type
+from ..utils.type_helper import guard_let
 
 
 class Store:
@@ -87,7 +87,7 @@ def prepare_retriever(state: State, config: dict) -> State:
     """
     config = config["configurable"]
 
-    embedding_model = guard_type(state.embedding_model, SentenceTransformer)
+    embedding_model = guard_let(state.embedding_model, SentenceTransformer)
 
     store = Store(
         embedding_model=embedding_model,

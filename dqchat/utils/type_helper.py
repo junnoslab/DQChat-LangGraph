@@ -4,7 +4,7 @@ from typing import TypeVar, Type, Any
 __T = TypeVar("__T")
 
 
-def guard_type(value: Any, expected_type: Type[__T]) -> __T:
+def guard_let(value: Any, expected_type: Type[__T]) -> __T:
     if isinstance(value, expected_type):
         return value
     elif value is None:
