@@ -1,3 +1,3 @@
-from metrics.output_parsers.json import (
+from dqchat.validator.metrics.output_parsers.json import (
     JSONKeyPathOutputParser as JSONKeyPathOutputParser,
 )
