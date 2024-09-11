@@ -1,7 +1,7 @@
 class FaithfulnessTemplate:
     @staticmethod
-    def generate_claims(text: str) -> str:
-        return f"""주어진 텍스트를 바탕으로 추론할 수 있는 사실적인 주장들(FACTUAL claims)의 포괄적인 목록을 생성해 주세요.
+    def generate_claims() -> str:
+        return """주어진 텍스트를 바탕으로 추론할 수 있는 사실적인 주장들(FACTUAL claims)의 포괄적인 목록을 생성해 주세요.
 
 예시:
 예시 텍스트: 
@@ -29,8 +29,8 @@ JSON:
 """
 
     @staticmethod
-    def generate_truths(text: str) -> str:
-        return f"""주어진 텍스트를 바탕으로 추론할 수 있는 사실적이고 논란의 여지가 없는 진실들의 포괄적인 목록을 생성해 주세요.
+    def generate_truths() -> str:
+        return """주어진 텍스트를 바탕으로 추론할 수 있는 사실적이고 논란의 여지가 없는 진실들의 포괄적인 목록을 생성해 주세요.
 
 예시:
 예시 텍스트: 
@@ -51,7 +51,7 @@ JSON:
 **
 
 텍스트:
-{text}
+{contexts}
 
 JSON:
 """

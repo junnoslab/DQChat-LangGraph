@@ -2,7 +2,8 @@ from typing import Optional, Union
 
 from datasets import Dataset
 from langchain.prompts import PromptTemplate
-from langchain_core.runnables import RunnableSequence
+from langchain_core.globals import set_debug
+from langchain_core.runnables import RunnableLambda, RunnableSequence
 from langchain_huggingface.llms import HuggingFacePipeline
 from transformers import PreTrainedModel
 from transformers.pipelines import Pipeline, pipeline
@@ -42,12 +43,12 @@ class FaithfulnessMetric(BaseMetric):
         pipe = self._wrap_pipeline(self.pipeline)
 
         prompt = PromptTemplate(
-            template=FaithfulnessTemplate.generate_truths(text="{contexts}"),
+            template=FaithfulnessTemplate.generate_truths(),
             input_variables=["contexts"],
         )
         chain = RunnableSequence(
             first=prompt,
-            middle=pipe,
+            middle=[pipe],
             last=JSONKeyPathOutputParser(keypath="truths"),
         )
         return chain
@@ -65,7 +66,7 @@ class FaithfulnessMetric(BaseMetric):
         )
         chain = RunnableSequence(
             first=prompt,
-            middle=pipe,
+            middle=[pipe],
             last=JSONKeyPathOutputParser(keypath="claims"),
         )
         return chain
@@ -89,7 +90,7 @@ class FaithfulnessMetric(BaseMetric):
         # Expected output: list of dicts with 'verdict' and Optional 'reason'
         chain = RunnableSequence(
             first=prompt,
-            middle=pipe,
+            middle=[pipe],
             last=JSONKeyPathOutputParser(keypath="verdicts"),
         )
         return chain
@@ -103,11 +104,21 @@ class FaithfulnessMetric(BaseMetric):
         return chain
 
     def _calculate_score(self) -> RunnableSequence:
-        prompt = PromptTemplate(
-            template=FaithfulnessTemplate.calculate_score(text="{verdicts}"),
-            input_variables=["verdicts"],
+        def calculate(verdicts: list[dict[str, str]]) -> float:
+            number_of_verdicts = len(verdicts)
+            if number_of_verdicts == 0:
+                return 1.0
+
+            faithfulness_count = sum(
+                1 for verdict in verdicts if verdict["verdict"].strip().lower() != "no"
+            )
+            score = faithfulness_count / number_of_verdicts
+            return 0.0 if score < self.threshold else score
+
+        chain = RunnableSequence(
+            first=RunnableLambda(lambda x: x["verdicts"]),
+            last=RunnableLambda(calculate),
         )
-        chain = RunnableSequence(first=prompt, last=self.model)
         return chain
 
     def measure(self, test_case: LLMTestCase) -> float:
@@ -121,6 +132,7 @@ class FaithfulnessMetric(BaseMetric):
             | self._calculate_score()
         )
 
+        set_debug(True)
         result = chain.invoke(test_case.to_dict())
         score_result = guard_let(result, float)
         return score_result

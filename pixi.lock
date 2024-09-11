@@ -115,7 +115,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/lame-3.100-h166bdaf_1003.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-0.2.15-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-community-0.2.15-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.37-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.38-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-huggingface-0.0.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-openai-0.1.23-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-text-splitters-0.2.2-pyhd8ed1ab_0.conda
@@ -426,7 +426,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-0.2.15-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-community-0.2.15-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.37-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.38-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-huggingface-0.0.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-openai-0.1.23-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-text-splitters-0.2.2-pyhd8ed1ab_0.conda
@@ -732,7 +732,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/lame-3.100-h166bdaf_1003.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-0.2.15-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-community-0.2.15-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.37-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.38-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-huggingface-0.0.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-openai-0.1.23-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-text-splitters-0.2.2-pyhd8ed1ab_0.conda
@@ -1046,7 +1046,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-0.2.15-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-community-0.2.15-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.37-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.38-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-huggingface-0.0.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-openai-0.1.23-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/langchain-text-splitters-0.2.2-pyhd8ed1ab_0.conda
@@ -2967,7 +2967,7 @@ packages:
   name: dqchat-langgraph
   version: 0.1.0
   path: .
-  sha256: 3506cef93b20abdbc4287deb028228f883d54bd029fe53124e6070a2cb325dfa
+  sha256: e7f83c062aa3680ab4753666aaf620ac12397aa276c290fe0db7be7518f761c9
   requires_python: '>=3.11,<3.12'
   editable: true
 - kind: conda
@@ -4098,13 +4098,13 @@ packages:
   timestamp: 1725095171039
 - kind: conda
   name: langchain-core
-  version: 0.2.37
+  version: 0.2.38
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.37-pyhd8ed1ab_0.conda
-  sha256: 68010b3e8917e3f369c41a9dc1c51ff99bae3106bcda82422b839a8b1b452d29
-  md5: 84252d68a5d3bd17725b2c6b067b986f
+  url: https://conda.anaconda.org/conda-forge/noarch/langchain-core-0.2.38-pyhd8ed1ab_0.conda
+  sha256: 18073c7eda038a5aba929176944f041d5a46be3d505a2b83a9b3c2c3e1aa4b3d
+  md5: 6fa4e96e1d568dc6c0a62cc086f47684
   depends:
   - jsonpatch >=1.33.0,<2.0.0
   - langsmith >=0.1.75,<0.2.0
@@ -4119,8 +4119,8 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/langchain-core?source=hash-mapping
-  size: 258619
-  timestamp: 1725092198167
+  size: 259142
+  timestamp: 1725400837037
 - kind: conda
   name: langchain-huggingface
   version: 0.0.3
